@@ -21,8 +21,8 @@ denominator minus the degree of the numerator. This function does not check that
 the input 'r' is rational in 'x'. */
 pole_order(r,x) := hipow(ratexpand(ratdenom(r)),x) - hipow(ratexpand(ratnum(r)),x);
 
-/* Return a Maxima list of the first m bits of the binary representation of the integer 'n'.
-This function does not check that both n & m are positive integers. */
+/* Return a Maxima list of the first `m` bits of the binary representation of the integer `n`.
+This function does not check that both `n` & `m` are positive integers. */
 bits(n,m) := block([b : []],
         for k : 1 thru m do (
             d : divide(n,2),
