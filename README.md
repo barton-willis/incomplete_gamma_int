@@ -1,7 +1,7 @@
 # incomplete_gamma_int
  
 The Maxima CAS package `incomplete_gamma_int` attempts to find a change of variable 
-that converts a given integrand to the form $\int \mathrm{e}^{-t} t^a \,\mathrm{d}t$. 
+that converts a given integrand to the form $\int \mathrm{e}^{-t} t^a \mathrm{d}t$. 
 When successful, Maxima returns the antiderivative that involves the incomplete gamma 
 function. A simple example is
  ~~~~
