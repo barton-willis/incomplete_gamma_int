@@ -4,6 +4,9 @@
 
  License: CC0 1.0 Universal (https://creativecommons.org/publicdomain/zero/1.0/) */
 
+/* When 'e' is a mapatom, return false; otherwise return op(e) with inflag set to true.*/
+safe_op(e) := block([inflag : true], if mapatom(e) then false else op(e));
+
 /* Return a list of the coefficients of a polynomial p[x]. This function doesn't check
    that p is a polynomial. */   
 all_poly_coefs(p,x) := (p : ratexpand(p), makelist(ratcoef(p,x,k),k,0, hipow(p,x)));
@@ -28,9 +31,9 @@ bits(n,m) := block([b : []],
        b);
 
 /* This function attempts to find a change of variable to convert the integrand
-   'e' to the form integrate(x^a * exp(-x), x) = -gamma_incomplete(1+a,x). This
-   method will be successful when the derivative change of variables is a product
-   of powers of the factors of the logarithmic derivative of the integrand 'e'. */
+'e' to the form integrate(x^a * exp(-x), x) = -gamma_incomplete(1+a,x). This
+method will be successful when the derivative change of variables is a product
+of powers of the factors of the logarithmic derivative of the integrand 'e'. */
 incomplete_gamma_int(e,x) := block([sigma, q, mu : 0, deg, k, a : gensym(), eqs : [], subx,
       kvars : [], numk, de, inflag : true, sol, antid : false, ppp, errormsg : false],
 

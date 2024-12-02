@@ -1,0 +1,15 @@
+incomplete_gamma_int(sqrt(x)*%e^(-x),x);
+-gamma_incomplete(3/2,x)$
+
+incomplete_gamma_int(%e^(-x[%pi])*sqrt(x[%pi]),x[%pi]);
+-gamma_incomplete(3/2,x[%pi])$
+
+incomplete_gamma_int(8*7^(3/2)*sqrt(x)*%e^(-(28*x)),x);
+-gamma_incomplete(3/2,28*x)$
+
+incomplete_gamma_int(-(x^(-α-2)*%e^(-(1/x))),x);
+-gamma_incomplete(α+1,1/x)$
+
+incomplete_gamma_int(-(%e^(-(1/x))/x^(5/2)),x);
+-gamma_incomplete(3/2,1/x)$
+
