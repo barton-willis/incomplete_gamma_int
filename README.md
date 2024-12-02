@@ -8,3 +8,5 @@ function. A simple example is:
 (%i1)	incomplete_gamma_int(sqrt(x-1)*sqrt(x)*(2*x-1)*%e^(x-x^2),x);
 (%o1)	-gamma_incomplete(3/2,(x-1)*x)
  ~~~~
+ Algorithmically, I think the method this package uses is correct, but the code has some
+ deficiencies, so it isn't ready for use.
