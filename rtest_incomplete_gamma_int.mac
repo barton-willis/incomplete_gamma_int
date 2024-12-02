@@ -15,3 +15,9 @@ incomplete_gamma_int(-(%e^(-(1/x))/x^(5/2)),x);
 
 incomplete_gamma_int(x^%pi*%e^(-x),x);
 -gamma_incomplete(%pi+1,x)$
+
+incomplete_gamma_int(sqrt(x-1)*sqrt(x)*(2*x-1)*%e^(x-x^2),x);
+-gamma_incomplete(3/2,(x-1)*x)$
+
+incomplete_gamma_int(-%pi * sqrt(x-1)*sqrt(x)*(2*x-1)*%e^(x-x^2),x);
+%pi*gamma_incomplete(3/2,(x-1)*x)$
