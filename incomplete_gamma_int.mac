@@ -1,0 +1,75 @@
+/*
+  Barton Willis
+  Maxima code for integration of some algebraic functions.
+
+ License: CC0 1.0 Universal (https://creativecommons.org/publicdomain/zero/1.0/) */
+
+/* Return a list of the coefficients of a polynomial p[x]. This function doesn't check
+   that p is a polynomial. */   
+all_poly_coefs(p,x) := (p : ratexpand(p), makelist(ratcoef(p,x,k),k,0, hipow(p,x)));
+
+/*Return the logarithmic derivative of the expression 'e' with respect to the variable 'x'.
+  Of course, 'x' should be a nonconstant mapatom, but this function doesn't check that for
+  that. */
+logdiff(e,x) := diff(e,x)/e;
+
+/* For a rational function 'r' in the variable 'x', return the degree of the 
+denominator minus the degree of the numerator. This function does not check that
+the input 'r' is rational in 'x'. */
+pole_order(r,x) := hipow(ratexpand(ratdenom(r)),x) - hipow(ratexpand(ratnum(r)),x);
+
+/* Return a Maxima list of the first m bits of the binary representation of the integer 'n'.
+This function does not check that both n & m are positive integers. */
+bits(n,m) := block([b : []],
+        for k : 1 thru m do (
+            d : divide(n,2),
+            push(second(d),b),
+            n : first(d)),
+       b);
+
+/* This function attempts to find a change of variable to convert the integrand
+   'e' to the form integrate(x^a * exp(-x), x) = -gamma_incomplete(1+a,x). This
+   method will be successful when the derivative change of variables is a product
+   of powers of the factors of the logarithmic derivative of the integrand 'e'. */
+incomplete_gamma_int(e,x) := block([sigma, q, mu : 0, deg, k, a : gensym(), eqs : [], subx,
+      kvars : [], numk, de, inflag : true, sol, antid : false, ppp, errormsg : false],
+
+    sigma : partfrac(gfactor(logdiff(e,x)),x),
+    ppp : if safe_op(sigma) = "+" then args(sigma) else [sigma],
+    ppp : sublist(ppp, lambda([s], pole_order(s,x) = 1)),
+    for sx in ppp do (
+        q : ratdenom(factor(sx)),
+        k : gensym(),
+        push(k,kvars),
+        mu : mu + k*(sx + logdiff(q,x))/(1+a)),
+
+    mu : partfrac(factor(mu),x),
+    de : mu^2 *(diff(sigma,x) - mu*sigma + (a + 1) * mu^2) + mu*(mu-sigma)*diff(mu,x) - mu*diff(mu,x,2) + 2*diff(mu,x)^2,
+    de : partfrac(de,x),
+
+    de : if safe_op(de) = "+" then args(de) else [de],
+
+    for dex in de do (
+        eqs : append(eqs, all_poly_coefs(ratnum(dex),x))),
+
+    numk : length(kvars),
+    n : 2^numk,
+    while n >= 0 do (
+      subx : map("=", kvars, bits(n,numk)),
+      eqsx : subst(subx, eqs),      
+      eqsx : gfactor(eqsx),
+      eqsx : delete(0,eqsx),
+      eqsx : listify(setify(eqsx)),
+      if eqsx # [] then (
+         sol : solve(eqsx,a))
+      else (
+         sol : []),
+      if sol # [] then (
+        f : errcatch(subst(subx, subst(sol, -(sigma/mu)+diff(mu,x)/mu^2+a+1))), 
+        if f # [] then (
+          f : factor(ratsimp(first(f))),
+          antid : -gamma_incomplete(subst(sol,a)+1, f),
+          n : 0)),
+      n : n-1),
+    antid);
+  
