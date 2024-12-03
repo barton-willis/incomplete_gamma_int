@@ -80,11 +80,12 @@ incomplete_gamma_int(e,x) := block([sigma, q, mu : 0, deg, k, a : gensym(), eqs 
           f : fo * factor(ratsimp(first(f))),
           foeq : factor(ratsimp(logdiff(diff(f,x) * f^subst(sol,a) * exp(-f)/e,x))),
           fox : solve_special_environment(foeq,fo),
-          f : subst(fox, f), /* what happens if no solution?*/
-          α : radcan(ratsimp(e / (diff(f,x) * f^subst(sol,a) * exp(-f)))), /*check it's constant!*/ 
-          print(" α = ", α),  
-          antid : - α * gamma_incomplete(subst(sol,a)+1, f),
-          n : 0)),
+          if fox # [ ] then (
+             f : subst(fox, f), /*if more than one solution, this uses the first solution */
+             α : radcan(ratsimp(e / (diff(f,x) * f^subst(sol,a) * exp(-f)))), /*check it's constant!*/ 
+             print(" α = ", α),  
+             antid : - α * gamma_incomplete(subst(sol,a)+1, f),
+             n : 0))),
       n : n-1),
     antid);
   
