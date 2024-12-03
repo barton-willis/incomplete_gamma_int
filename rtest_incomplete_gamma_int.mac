@@ -1,3 +1,6 @@
+(load("incomplete_gamma_int"),0);
+0$
+
 incomplete_gamma_int(sqrt(x)*%e^(-x),x);
 -gamma_incomplete(3/2,x)$
 
