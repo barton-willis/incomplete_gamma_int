@@ -43,7 +43,7 @@ method will be successful when the derivative change of variables is a product
 of powers of the factors of the logarithmic derivative of the integrand 'e'. */
 incomplete_gamma_int(e,x) := block([sigma, q, mu : 0, deg, k, a : gensym(), eqs : [], subx,
       kvars : [], numk, de, inflag : true, sol, antid : false, ppp, errormsg : false,fo,
-      foex, fox, α],
+      foex, fox, α,n,eqsx,f,foeq],
 
     sigma : partfrac(gfactor(logdiff(e,x)),x),
     ppp : if safe_op(sigma) = "+" then args(sigma) else [sigma],
