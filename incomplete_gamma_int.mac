@@ -4,6 +4,12 @@
 
  License: CC0 1.0 Universal (https://creativecommons.org/publicdomain/zero/1.0/) */
 
+/* Return solve(e,x) in an environment with progammode : true, and ... globalsolve : false. */
+solve_special_environment(e,x) := block([programmode : true, backsubst : true, realonly : false,
+ breakup : true, solveexplicit : true, solvenullwarn : false, solvefactors : true, solveradcan : true,
+ solvetrigwarn : false, solvedecomposes : true, globalsolve : false],
+   solve(e,x)$
+
 /* When 'e' is a mapatom, return false; otherwise return op(e) with inflag set to true.*/
 safe_op(e) := block([inflag : true], if mapatom(e) then false else op(e));
 
@@ -65,7 +71,7 @@ incomplete_gamma_int(e,x) := block([sigma, q, mu : 0, deg, k, a : gensym(), eqs 
       eqsx : delete(0,eqsx),
       eqsx : listify(setify(eqsx)),
       if eqsx # [] then (
-         sol : solve(eqsx,a))
+         sol : solve_special_environment(eqsx,a))
       else (
          sol : []),
       if sol # [] then (
@@ -73,7 +79,7 @@ incomplete_gamma_int(e,x) := block([sigma, q, mu : 0, deg, k, a : gensym(), eqs 
         if f # [] then (
           f : fo * factor(ratsimp(first(f))),
           foeq : factor(ratsimp(logdiff(diff(f,x) * f^subst(sol,a) * exp(-f)/e,x))),
-          fox : solve(foeq,fo),
+          fox : solve_special_environment(foeq,fo),
           f : subst(fox, f), /* what happens if no solution?*/
           α : radcan(ratsimp(e / (diff(f,x) * f^subst(sol,a) * exp(-f)))), /*check it's constant!*/ 
           print(" α = ", α),  
