@@ -1,6 +1,7 @@
 /*
   Barton Willis
-  Maxima code for integration of some algebraic functions.
+  Maxima code for integration of some functions whose antiderivative involves the 
+  incomplete gamma function.
 
  License: CC0 1.0 Universal (https://creativecommons.org/publicdomain/zero/1.0/) */
 
@@ -8,7 +9,7 @@
 solve_special_environment(e,x) := block([programmode : true, backsubst : true, realonly : false,
  breakup : true, solveexplicit : true, solvenullwarn : false, solvefactors : true, solveradcan : true,
  solvetrigwarn : false, solvedecomposes : true, globalsolve : false],
-   solve(e,x)$
+   solve(e,x))$
 
 /* When 'e' is a mapatom, return false; otherwise return op(e) with inflag set to true.*/
 safe_op(e) := block([inflag : true], if mapatom(e) then false else op(e));
@@ -83,7 +84,8 @@ incomplete_gamma_int(e,x) := block([sigma, q, mu : 0, deg, k, a : gensym(), eqs 
           if fox # [ ] then (
              f : subst(fox, f), /*if more than one solution, this uses the first solution */
              α : radcan(ratsimp(e / (diff(f,x) * f^subst(sol,a) * exp(-f)))), /*check it's constant!*/ 
-             print(" α = ", α),  
+             if not freeof(α,x) then (
+              print("unable to show that ",α," is piecewise constant")),
              antid : - α * gamma_incomplete(subst(sol,a)+1, f),
              n : 0))),
       n : n-1),
