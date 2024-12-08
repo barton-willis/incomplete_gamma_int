@@ -1,7 +1,7 @@
 /*
   Barton Willis
   Maxima code for integration of some functions whose antiderivative involves the 
-  incomplete gamma function.
+  incomplete gamma function and the Gauss hypergeometric function.
 
  License: CC0 1.0 Universal (https://creativecommons.org/publicdomain/zero/1.0/) */
 
@@ -90,4 +90,61 @@ incomplete_gamma_int(e,x) := block([sigma, q, mu : 0, deg, k, a : gensym(), eqs 
              n : 0))),
       n : n-1),
     antid);
+
+/* Return a Maxima list of the first `m` trits of the trinary representation of the integer `n`.
+This function does not check that both `n` & `m` are positive integers. */
+trits(n,m) := block([b : []],
+        for k : 1 thru m do (
+            d : divide(n,3),
+            push(second(d),b),
+            n : first(d)),
+       b);
+
+hypergeometric_int(e,x) := block([sigma, kerns, n, N, resfun, a : gensym(), b : gensym(),
+   de, eqs, sol, α, f, k : 1, antid : false, errormsg : false],
+
+   sigma : partfrac(gfactor(logdiff(e,x)),x),
+   kerns : if safe_op(sigma) = "+" then args(sigma) else [sigma],
+   kerns : sublist(kerns, lambda([s], pole_order(s,x) = 1)),
+   resfn : lambda([z,k], z : z - logdiff(z,x), if k = 0 then 0 elseif k = 1 then z/(a+1) else z/(1+a+b)),
+
+   n : length(kerns),
+   N : 3^n,
+   while  k <= N and (antid = false) do (
+      mu : xreduce("+", map(resfn, kerns, trits(k,n))),
+      k : k + 1,
+      
+      de : b*(mu^2*(diff(sigma,x,1))-mu*(diff(mu,x,1))*sigma-mu*(diff(mu,x,2))+
+           2*(diff(mu,x,1))^2)+(mu*sigma-diff(mu,x,1)-a*mu^2-mu^2)*(mu*sigma-diff(mu,x,1)-b*mu^2-a*mu^2-mu^2),
+
+      de : partfrac(gfactor(de),x),
+
+      eqs : if safe_op(de) = "+" then args(de) else [de],
+      eqs : map(ratnum, eqs),
+      eqs : map(lambda([s], all_poly_coefs(s,x)),eqs),
+      eqs : xreduce('append, eqs),    
+      sol : solve_special_environment(eqs,[a,b]),
+      if sol # [] then (     
+        sol : first(sol),
+        [a,b] : subst(sol, [a,b]),
+        f : (mu*sigma-diff(mu,x,1)+(-a-1)*mu^2)/(mu*sigma-diff(mu,x,1)+(-b-a-1)*mu^2),
+        f : ratsimp(subst(sol, f)),
+        α : ratsimp(e / (diff(f,x) * f^a * (1-f)^b)), 
+        /* This should be improved to allow things like abs(x)/x to pass. After that,
+           it should throw an error. */
+        if not freeof(α,x) then (
+              print("unable to show that ",α," is piecewise constant")),
+        antid : α * (f^(1 + a) * hypergeometric([1 + a, -b], [2 + a], f)/(1 + a)),
+        /* Maybe optionally apply hypergeometric_simp.*/
+        antid : ratsimp(hypergeometric_simp(antid)))),
+  antid);
+
+        
+     
+          
+
+
+      
+
+
   
