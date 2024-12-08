@@ -100,6 +100,12 @@ trits(n,m) := block([b : []],
             n : first(d)),
        b);
 
+/* Needed improvements:
+   (a) When 2+a is a negative integer, hypergeometric([1 + a, -b], [2 + a], f)/(1 + a)) isn't correct.
+   (b) Better way to check that  α is piecewise constant.
+   (c) Possibly optionally do hypergeometric_simp. 
+   (d) do some common subexression optimization to find de.
+   (e) regression tests. */
 hypergeometric_int(e,x) := block([sigma, kerns, n, N, resfun, a : gensym(), b : gensym(),
    de, eqs, sol, α, f, k : 1, antid : false, errormsg : false],
 
