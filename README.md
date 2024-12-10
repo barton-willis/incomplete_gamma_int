@@ -8,6 +8,9 @@ antiderivative in terms of either the incomplete gamma function or the Gauss hyp
 The method is akin to an automatic derivative divides (integration by substitution)
 with a seed function that involves a so-called special function.
 
+This project started with just the `incomplete_gamma_int` case, and then I extended it.
+Likely, I should rename the project.
+
 ### Examples
 
 Below is are two examples:
