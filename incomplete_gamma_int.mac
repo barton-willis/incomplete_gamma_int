@@ -104,8 +104,8 @@ incomplete_gamma_int(e,x) := block([sigma, q, mu : 0, deg, k, a : gensym(), eqs 
       n : n-1),
     antid);
 
-hypergeometric_int(e,x) := block([sigma, kerns, n, N, resfun, a : gensym(), b : gensym(),
-   de, eqs, sol, α, f, k : 1, antid : false, errormsg : false],
+hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfun, a : gensym(), b : gensym(),
+   de, eqs, sol, α, f, k : 1, αα,aa,bb,ff, antid : false, errormsg : false],
 
    sigma : partfrac(gfactor(logdiff(e,x)),x),
    kerns : if safe_op(sigma) = "+" then args(sigma) else [sigma],
@@ -120,7 +120,6 @@ hypergeometric_int(e,x) := block([sigma, kerns, n, N, resfun, a : gensym(), b : 
       
       de : b*(mu^2*(diff(sigma,x,1))-mu*(diff(mu,x,1))*sigma-mu*(diff(mu,x,2))+
            2*(diff(mu,x,1))^2)+(mu*sigma-diff(mu,x,1)-a*mu^2-mu^2)*(mu*sigma-diff(mu,x,1)-b*mu^2-a*mu^2-mu^2),
-
       de : partfrac(gfactor(de),x),
       eqs : if safe_op(de) = "+" then args(de) else [de],
       eqs : map(ratnum, eqs),
@@ -129,17 +128,40 @@ hypergeometric_int(e,x) := block([sigma, kerns, n, N, resfun, a : gensym(), b : 
       sol : solve_special_environment(eqs,[a,b]),
       if sol # [] and sol # 'all then (     
         sol : first(sol),
-        [a,b] : subst(sol, [a,b]),
-        f : (mu*sigma-diff(mu,x,1)+(-a-1)*mu^2)/(mu*sigma-diff(mu,x,1)+(-b-a-1)*mu^2),
-        f : ratsimp(subst(sol, f)),
-        α : ratsimp(e / (diff(f,x) * f^a * (1-f)^b)), 
-        /* This should be improved to allow things like abs(x)/x to pass. After that,
+        f : (mu*sigma-diff(mu,x,1)+(-a-1)*mu^2)/(mu*sigma-diff(mu,x,1)+(-b-a-1)*mu^2),       
+        f : errcatch(ratsimp(subst(sol, f))),
+        if f # [] then (
+          f : first(f),
+          α : subst(sol, ratsimp(e / (diff(f,x) * f^a * (1-f)^b))), 
+
+          /* This should be improved to allow things like abs(x)/x to pass. After that,
            it should throw an error. */
-        if not freeof(α,x) then (
+          if not freeof(α,x) then (
               print("unable to show that ",α," is piecewise constant")),
-        antid : α * (f^(1 + a) * hypergeometric([1 + a, -b], [2 + a], f)/(1 + a)),
-        /* Maybe optionally apply hypergeometric_simp?*/      
-        antid : factor(antid))),
-  antid);
+
+          [αα,aa,bb,ff] : subst(sol, [α,a,b,f]),
+          /* Maybe optionally apply hypergeometric_simp?*/   
+          if not (integerp(aa) and 1 + aa <= 0) then (
+             antid : factor(αα * f^(1+aa) * hypergeometric([1+aa, -bb], [2+aa], f)/(1+aa)))))),
+   antid);
+
+
+
+        
+
+     
+          
+
 
       
+
+
+  
+     
+          
+
+
+      
+
+
+  
