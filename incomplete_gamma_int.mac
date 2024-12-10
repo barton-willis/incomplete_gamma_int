@@ -104,6 +104,7 @@ incomplete_gamma_int(e,x) := block([sigma, q, mu : 0, deg, k, a : gensym(), eqs 
       n : n-1),
     antid);
 
+/* seed for integrate(α x^a (1-x)^b,x) */
 hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfun, a : gensym(), b : gensym(),
    de, eqs, sol, α, f, k : 1, αα,aa,bb,ff, antid : false, errormsg : false],
 
