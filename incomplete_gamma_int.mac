@@ -121,7 +121,7 @@ hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfun, a : gensym(), 
         if f # [] then (
           f : first(f),
           α : subst(sol, ratsimp(e / (diff(f,x) * f^a * (1-f)^b))), 
-
+          α : block([rootsconmode : 'all], rootscontract(α)),
           /* This should be improved to allow things like abs(x)/x to pass. */
           if not freeof(α,x) then (
               print("unable to show that ",α," is piecewise constant")),
