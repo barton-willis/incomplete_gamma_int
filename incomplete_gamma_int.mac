@@ -54,55 +54,41 @@ digits(n,m,base) := block([d : []],
 'e' to the form integrate(x^a * exp(-x), x) = -gamma_incomplete(1+a,x). This
 method will be successful when the derivative change of variables is a product
 of powers of the factors of the logarithmic derivative of the integrand 'e'. */
-incomplete_gamma_int(e,x) := block([sigma, q, mu : 0, deg, k, a : gensym(), eqs : [], subx,
-      kvars : [], numk, de, inflag : true, sol, antid : false, ppp, errormsg : false,fo,
-      foex, fox, α,n,eqsx,f,foeq],
+incomplete_gamma_int(e,x) := block([sigma, mu, kerns, n, N, resfun, a : gensym(),
+   de, eqs, sol, α, f, k : 1, antid : false, errormsg : false],
 
-    sigma : partfrac(gfactor(logdiff(e,x)),x),
-    ppp : if safe_op(sigma) = "+" then args(sigma) else [sigma],
-    ppp : sublist(ppp, lambda([s], pole_order(s,x) = 1)),
-    for sx in ppp do (
-        q : ratdenom(factor(sx)),
-        k : gensym(),
-        push(k,kvars),
-        mu : mu + k*(sx + logdiff(q,x))/(1+a)),
+   sigma : partfrac(gfactor(logdiff(e,x)),x),
+   kerns : if safe_op(sigma) = "+" then args(sigma) else [sigma],
+   kerns : sublist(kerns, lambda([s], pole_order(s,x) = 1)),
+   resfn : lambda([z,k], z : (z - logdiff(z,x)), if k = 0 then 0 else z/(a+1)),
+   n : length(kerns),
+   N : 2^n,
+   while  k <= N and (antid = false) do (
+      mu : xreduce("+", map(resfn, kerns, digits(k,n,2))),
+      k : k + 1,
 
-    mu : partfrac(factor(mu),x),
-    de : mu^2 *(diff(sigma,x) - mu*sigma + (a + 1) * mu^2) + mu*(mu-sigma)*diff(mu,x) - mu*diff(mu,x,2) + 2*diff(mu,x)^2,
-    de : partfrac(de,x),
+      de : mu^2 *(diff(sigma,x) - mu*sigma + (a + 1) * mu^2) + mu*(mu-sigma)*diff(mu,x) - 
+           mu*diff(mu,x,2) + 2*diff(mu,x)^2,
 
-    de : if safe_op(de) = "+" then args(de) else [de],
-
-    for dex in de do (
-        eqs : append(eqs, all_poly_coefs(ratnum(dex),x))),
-
-    numk : length(kvars),
-    n : 2^numk,
-    while n >= 0 do (
-      subx : map("=", kvars, digits(n,numk,2)),
-      eqsx : subst(subx, eqs),      
-      eqsx : gfactor(eqsx),
-      eqsx : delete(0,eqsx),
-      eqsx : listify(setify(eqsx)),
-      if eqsx # [] then (
-         sol : solve_special_environment(eqsx,a))
-      else (
-         sol : []),
-      if sol # [] then (
-        f : errcatch(subst(subx, subst(sol, -(sigma/mu)+diff(mu,x)/mu^2+a+1))), 
+      de : partfrac(gfactor(de),x),
+      eqs : if safe_op(de) = "+" then args(de) else [de],
+      eqs : map(ratnum, eqs),
+      eqs : map(lambda([s], all_poly_coefs(s,x)),eqs),
+      eqs : xreduce('append, eqs),   
+      sol : solve_special_environment(eqs,[a]),
+      if sol # [] and sol # 'all then (     
+        sol : first(sol),
+        f : -(sigma/mu)+diff(mu,x,1)/mu^2+a+1,
+        f : errcatch(ratsimp(subst(sol, f))),
         if f # [] then (
-          f : fo * factor(ratsimp(first(f))),
-          foeq : factor(ratsimp(logdiff(diff(f,x) * f^subst(sol,a) * exp(-f)/e,x))),
-          fox : solve_special_environment(foeq,fo),
-          if fox # [ ] then (
-             f : subst(fox, f), /*if more than one solution, this uses the first solution */
-             α : radcan(ratsimp(e / (diff(f,x) * f^subst(sol,a) * exp(-f)))), /*check it's constant!*/ 
-             if not freeof(α,x) then (
+          f : first(f),
+          α : subst(sol, ratsimp(e / (diff(f,x) * f^a * exp(-f)))), 
+          α : block([rootsconmode : 'all], rootscontract(α)),
+          /* This should be improved to allow things like abs(x)/x to pass. */
+          if not freeof(α,x) then (
               print("unable to show that ",α," is piecewise constant")),
-             antid : - α * gamma_incomplete(subst(sol,a)+1, f),
-             n : 0))),
-      n : n-1),
-    antid);
+          antid : factor(-α * gamma_incomplete(subst(sol,a+1),f))))),
+   antid);
 
 /* seed for integrate(α x^a (1-x)^b,x) */
 hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfun, a : gensym(), b : gensym(),
