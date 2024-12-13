@@ -1,8 +1,8 @@
 ## Automated derivative divides for symbolic integration
 
 The Maxima CAS package `incomplete_gamma_int` attempts to find a change of variable that converts 
-a given integrand into either the form $\int \mathrm{e}^{-t} t^a \, \mathrm{d}t$ or
-the form $\int t^a (1-t)^b\, \mathrm{d}t$. When successful, the package returns the 
+a given integrand into either the form $\int \mathrm{e}^{-t} t^a  \mathrm{d}t$ or
+the form $\int t^a (1-t)^b  \mathrm{d}t$. When successful, the package returns the 
 antiderivative in terms of either the incomplete gamma function or the Gauss hypergeometric function. 
 
 The method is akin to an automatic derivative divides (integration by substitution)
