@@ -5,6 +5,8 @@
 
  License: CC0 1.0 Universal (https://creativecommons.org/publicdomain/zero/1.0/) */
 
+load(ratpow);
+
 my_int(e,x) := block([antid : false, methods],
   methods : ['incomplete_gamma_int, 'hypergeometric_int],
   for fn in methods while antid = false do (
@@ -19,16 +21,6 @@ solve_special_environment(e,x) := block([programmode : true, backsubst : true, r
 
 /* When 'e' is a mapatom, return false; otherwise return op(e) with inflag set to true.*/
 safe_op(e) := block([inflag : true], if mapatom(e) then false else op(e));
-
-/* Return a list of the coefficients of a polynomial p[x]. This function doesn't check
-   that p is a polynomial. */   
-all_poly_coefs(p,x) := block([n, cfs : []],
-  p : ratexpand(p), 
-  n : hipow(p,x),
-  while n >= 0 do (
-    push(ratcoeff(p,x,n), cfs),
-    n : n-1),
-  cfs); 
 
 /*Return the logarithmic derivative of the expression 'e' with respect to the variable 'x'.
   Of course, 'x' should be a nonconstant mapatom, but this function doesn't check that for
@@ -73,7 +65,7 @@ incomplete_gamma_int(e,x) := block([sigma, mu, kerns, n, N, resfun, a : gensym()
       de : partfrac(gfactor(de),x),
       eqs : if safe_op(de) = "+" then args(de) else [de],
       eqs : map(ratnum, eqs),
-      eqs : map(lambda([s], all_poly_coefs(s,x)),eqs),
+      eqs : map(lambda([s], ratp_dense_coeffs(s,x)),eqs),
       eqs : xreduce('append, eqs),   
       sol : solve_special_environment(eqs,[a]),
       if sol # [] and sol # 'all then (     
@@ -90,7 +82,7 @@ incomplete_gamma_int(e,x) := block([sigma, mu, kerns, n, N, resfun, a : gensym()
           antid : factor(-α * gamma_incomplete(subst(sol,a+1),f))))),
    antid);
 
-/* seed for integrate(α x^a (1-x)^b,x) */
+/* seed for integrate(α x^a * (1-x)^b,x) */
 hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfun, a : gensym(), b : gensym(),
    de, eqs, sol, α, f, k : 1, αα,aa,bb,ff, antid : false, errormsg : false],
 
@@ -111,7 +103,7 @@ hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfun, a : gensym(), 
       de : partfrac(gfactor(de),x),
       eqs : if safe_op(de) = "+" then args(de) else [de],
       eqs : map(ratnum, eqs),
-      eqs : map(lambda([s], all_poly_coefs(s,x)),eqs),
+      eqs : map(lambda([s], ratp_dense_coeffs(s,x)),eqs),
       eqs : xreduce('append, eqs),   
       sol : solve_special_environment(eqs,[a,b]),
       if sol # [] and sol # 'all then (     
@@ -133,22 +125,3 @@ hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfun, a : gensym(), 
    antid);
 
 
-
-        
-
-     
-          
-
-
-      
-
-
-  
-     
-          
-
-
-      
-
-
-  
