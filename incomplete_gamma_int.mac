@@ -52,8 +52,7 @@ incomplete_gamma_int(e,x) := block([sigma, mu, kerns, n, N, resfun, a : gensym()
    sigma : partfrac(gfactor(ratsimp(logdiff(e,x))),x),
    kerns : if safe_op(sigma) = "+" then args(sigma) else [sigma],
    kerns : sublist(kerns, lambda([s], pole_order(s,x) = 1)),
-   resfn : lambda([z,k], print("z = ",z, "k = ",k),
-        if k = 0 then 0 else (z - logdiff(1/ratdenom(z),x))/(a+1)),
+   resfn : lambda([z,k], if k = 0 then 0 else (z - logdiff(1/ratdenom(z),x))/(a+1)),
    n : length(kerns),
    N : 2^n,
 

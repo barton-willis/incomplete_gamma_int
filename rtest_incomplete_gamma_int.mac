@@ -1,26 +1,38 @@
 (load("incomplete_gamma_int"),0);
 0$
 
-incomplete_gamma_int(sqrt(x)*%e^(-x),x);
+my_int(sqrt(x)*%e^(-x),x);
 -gamma_incomplete(3/2,x)$
 
-incomplete_gamma_int(%e^(-x[%pi])*sqrt(x[%pi]),x[%pi]);
+my_int(%e^(-x[%pi])*sqrt(x[%pi]),x[%pi]);
 -gamma_incomplete(3/2,x[%pi])$
 
-incomplete_gamma_int(8*7^(3/2)*sqrt(x)*%e^(-(28*x)),x);
+my_int(8*7^(3/2)*sqrt(x)*%e^(-(28*x)),x);
 -gamma_incomplete(3/2,28*x)$
 
-incomplete_gamma_int(-(x^(-α-2)*%e^(-(1/x))),x);
+my_int(-(x^(-α-2)*%e^(-(1/x))),x);
 -gamma_incomplete(α+1,1/x)$
 
-incomplete_gamma_int(-(%e^(-(1/x))/x^(5/2)),x);
+my_int(-(%e^(-(1/x))/x^(5/2)),x);
 -gamma_incomplete(3/2,1/x)$
 
-incomplete_gamma_int(x^%pi*%e^(-x),x);
+my_int(x^%pi*%e^(-x),x);
 -gamma_incomplete(%pi+1,x)$
 
-incomplete_gamma_int(sqrt(x-1)*sqrt(x)*(2*x-1)*%e^(x-x^2),x);
+my_int(sqrt(x-1)*sqrt(x)*(2*x-1)*%e^(x-x^2),x);
 -gamma_incomplete(3/2,(x-1)*x)$
 
-incomplete_gamma_int(-%pi * sqrt(x-1)*sqrt(x)*(2*x-1)*%e^(x-x^2),x);
+my_int(-%pi * sqrt(x-1)*sqrt(x)*(2*x-1)*%e^(x-x^2),x);
 %pi*gamma_incomplete(3/2,(x-1)*x)$
+
+my_int(%pi*(2*x-10/x^3)*(x^2+5/x^2)^(1/3)*%e^(-x^2-5/x^2));
+-%pi*gamma_incomplete(4/3,(x^4+5)/x^2)$
+
+my_int(((x+1)^2*((x+1)/(1-x)^2+1/(1-x))*%e^(-((x+1)/(1-x))))/(1-x)^2,x);
+-gamma_incomplete(3,-((x+1)/(x-1)))$
+
+my_int(x^p*%e^(-x),x);
+-gamma_incomplete(p+1,x)$
+
+my_int(x^a*%e^(-x),x);
+-gamma_incomplete(a+1,x)$
