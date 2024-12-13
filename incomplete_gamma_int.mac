@@ -1,7 +1,7 @@
 /*
   Barton Willis
-  Maxima code for integration of some functions whose antiderivative involves the 
-  incomplete gamma function and the Gauss hypergeometric function.
+  Maxima code for integration of some functions whose antiderivative involves 
+  either the incomplete gamma function or the Gauss hypergeometric function.
 
  License: CC0 1.0 Universal (https://creativecommons.org/publicdomain/zero/1.0/) */
 
@@ -49,24 +49,21 @@ of powers of the factors of the logarithmic derivative of the integrand 'e'. */
 incomplete_gamma_int(e,x) := block([sigma, mu, kerns, n, N, resfun, a : gensym(),
    de, eqs, sol, α, f, k : 1, antid : false, errormsg : false],
 
-   sigma : partfrac(gfactor(logdiff(e,x)),x),
+   sigma : partfrac(gfactor(ratsimp(logdiff(e,x))),x),
    kerns : if safe_op(sigma) = "+" then args(sigma) else [sigma],
    kerns : sublist(kerns, lambda([s], pole_order(s,x) = 1)),
-   resfn : lambda([z,k], z : (z - logdiff(z,x)), if k = 0 then 0 else z/(a+1)),
+   resfn : lambda([z,k], print("z = ",z, "k = ",k),
+        if k = 0 then 0 else (z - logdiff(1/ratdenom(z),x))/(a+1)),
    n : length(kerns),
    N : 2^n,
+
    while  k <= N and (antid = false) do (
       mu : xreduce("+", map(resfn, kerns, digits(k,n,2))),
       k : k + 1,
-
       de : mu^2 *(diff(sigma,x) - mu*sigma + (a + 1) * mu^2) + mu*(mu-sigma)*diff(mu,x) - 
            mu*diff(mu,x,2) + 2*diff(mu,x)^2,
-
-      de : partfrac(gfactor(de),x),
-      eqs : if safe_op(de) = "+" then args(de) else [de],
-      eqs : map(ratnum, eqs),
-      eqs : map(lambda([s], ratp_dense_coeffs(s,x)),eqs),
-      eqs : xreduce('append, eqs),   
+      eqs : ratp_dense_coeffs(de,x),
+      eqs : gfactor(eqs),       
       sol : solve_special_environment(eqs,[a]),
       if sol # [] and sol # 'all then (     
         sol : first(sol),
@@ -123,5 +120,3 @@ hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfun, a : gensym(), 
           if not (integerp(aa) and 1 + aa <= 0) then (
              antid : factor(αα * f^(1+aa) * hypergeometric([1+aa, -bb], [2+aa], f)/(1+aa)))))),
    antid);
-
-
