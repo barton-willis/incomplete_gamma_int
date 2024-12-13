@@ -13,7 +13,7 @@ Likely, I should rename the project.
 
 ### Examples
 
-Below is are two examples:
+Below are two examples:
 
 ```maxima
 (%i1) my_int(sqrt(x-1) * sqrt(x) * (2*x-1) * %e^(x-x^2), x);
