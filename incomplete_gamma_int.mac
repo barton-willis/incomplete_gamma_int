@@ -30,7 +30,7 @@ logdiff(e,x) := diff(e,x)/e;
 /* For a rational function 'r' in the variable 'x', return the degree of the 
 denominator minus the degree of the numerator. This function does not check that
 the input 'r' is rational in 'x'. */
-pole_order(r,x) := hipow(ratexpand(ratdenom(r)),x) - hipow(ratexpand(ratnum(r)),x);
+pole_order(r,x) := hipow(ratexpand(ratdenom(r)),x) - hipow(ratexpand(ratnumer(r)),x);
 
 /* Return a Maxima list of the first `m` digits of the base 'base' representation 
 of the integer `n`. This function does not check that both `n` & `m` are positive 
@@ -80,7 +80,7 @@ incomplete_gamma_int(e,x) := block([sigma, mu, kerns, n, N, resfun, a : gensym()
 
 /* seed for integrate(α x^a * (1-x)^b,x) */
 hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfun, a : gensym(), b : gensym(),
-   de, eqs, sol, α, f, k : 1, αα,aa,bb,ff, antid : false, errormsg : false],
+   de, eqs, sol, α, f, k : 1, αα, aa, bb, ff, antid : false, errormsg : false],
 
    sigma : partfrac(gfactor(logdiff(e,x)),x),
    kerns : if safe_op(sigma) = "+" then args(sigma) else [sigma],
@@ -98,7 +98,7 @@ hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfun, a : gensym(), 
            (mu*sigma-diff(mu,x,1)-b*mu^2-a*mu^2-mu^2),
       de : partfrac(gfactor(de),x),
       eqs : if safe_op(de) = "+" then args(de) else [de],
-      eqs : map(ratnum, eqs),
+      eqs : map(ratnumer, eqs),
       eqs : map(lambda([s], ratp_dense_coeffs(s,x)),eqs),
       eqs : xreduce('append, eqs),   
       sol : solve_special_environment(eqs,[a,b]),
