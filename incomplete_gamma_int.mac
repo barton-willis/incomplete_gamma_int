@@ -9,7 +9,7 @@ load(ratpow);
 load(quotify);
 
 my_int(e,x) := block([antid : false, methods],
-  methods : ['incomplete_gamma_int, 'hypergeometric_int],
+  methods : ['power_int, 'incomplete_gamma_int, 'hypergeometric_int],
   for fn in methods while antid = false do (
     antid : fn(e,x)),
   antid);
@@ -123,4 +123,30 @@ hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfun, a : gensym(), 
           /* Maybe optionally apply hypergeometric_simp?*/   
           if not (integerp(aa) and 1 + aa <= 0) then (
              antid : factor(αα * f^(1+aa) * hypergeometric([1+aa, -bb], [2+aa], f)/(1+aa)))))),
+   antid);
+
+/* seed for integrate(α x^a,x) */
+power_int(e,x) := block([sigma, mu, kerns, n, N, resfun, de, eqs, f, k : 1, antid : false, errormsg : false],
+
+   sigma : partfrac(gfactor(logdiff(e,x)),x),
+   kerns : if safe_op(sigma) = "+" then args(sigma) else [sigma],
+   kerns : sublist(kerns, lambda([s], pole_order(s,x) = 1)),
+   resfn : lambda([z,k], if k = 0 then 0 else z - logdiff(z,x)),
+   n : length(kerns),
+   N : 2^n,
+   while  k <= N and (antid = false) do (
+      mu : xreduce("+", map(resfn, kerns, digits(k,n,2))),
+      k : k + 1,      
+      de : -(mu*sigma)+diff(mu,x,1)+mu^2,
+      de : gfactor(de),
+      if equal(de,0) then (   
+        f : factor(exp(integrate(mu,x))),  
+        if askequal(factor(radcan(diff(f,x))),0) # 'yes then (
+           α : ratsimp(e /diff(f,x)), 
+           α : block([rootsconmode : 'all], rootscontract(α)),
+           /* This should be improved to allow things like abs(x)/x to pass. */
+           if not freeof(α,x) then (
+              print("unable to show that ",α," is piecewise constant")),
+           antid : factor(α * f)))),
+         
    antid);
