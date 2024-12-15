@@ -6,6 +6,7 @@
  License: CC0 1.0 Universal (https://creativecommons.org/publicdomain/zero/1.0/) */
 
 load(ratpow);
+load(quotify);
 
 my_int(e,x) := block([antid : false, methods],
   methods : ['incomplete_gamma_int, 'hypergeometric_int],
@@ -46,9 +47,8 @@ digits(n,m,base) := block([d : []],
 'e' to the form integrate(x^a * exp(-x), x) = -gamma_incomplete(1+a,x). This
 method will be successful when the derivative change of variables is a product
 of powers of the factors of the logarithmic derivative of the integrand 'e'. */
-incomplete_gamma_int(e,x) := block([sigma, mu, kerns, n, N, resfun, ?a : gensym(),
+incomplete_gamma_int(e,x) := block([sigma, mu, kerns, n, N, resfun, a : gensym(),
    de, eqs, sol, α, f, k : 1, antid : false, errormsg : false],
-
    sigma : partfrac(gfactor(ratsimp(logdiff(e,x))),x),
    kerns : if safe_op(sigma) = "+" then args(sigma) else [sigma],
    kerns : sublist(kerns, lambda([s], pole_order(s,x) = 1)),
@@ -59,23 +59,24 @@ incomplete_gamma_int(e,x) := block([sigma, mu, kerns, n, N, resfun, ?a : gensym(
    while  k <= N and (antid = false) do (
       mu : xreduce("+", map(resfn, kerns, digits(k,n,2))),
       k : k + 1,
-      de : mu^2 *(diff(sigma,x) - mu*sigma + (?a + 1) * mu^2) + mu*(mu-sigma)*diff(mu,x) - 
-           mu*diff(mu,x,2) + 2*diff(mu,x)^2,
+      de : mu^2 *(diff(sigma,x) - mu*sigma + (a + 1) * mu^2) + mu*(mu-sigma)*diff(mu,x) - 
+           mu*diff(mu,x,2) + 2*diff(mu,x)^2,      
       eqs : ratp_dense_coeffs(de,x),
-      eqs : gfactor(eqs),  
-      sol : solve_special_environment(eqs,[?a]),
+      eqs : gfactor(eqs), 
+      eqs : quotify(eqs,'a),
+      sol : solve_special_environment(eqs,[a]),
       if sol # [] and sol # 'all then (     
         sol : first(sol),
-        f : -(sigma/mu)+diff(mu,x,1)/mu^2+?a+1,
+        f : -(sigma/mu)+diff(mu,x,1)/mu^2+a+1,
         f : errcatch(ratsimp(subst(sol, f))),
         if f # [] then (
           f : first(f),
-          α : subst(sol, ratsimp(e / (diff(f,x) * f^?a * exp(-f)))), 
+          α : subst(sol, ratsimp(e / (diff(f,x) * f^a * exp(-f)))), 
           α : block([rootsconmode : 'all], rootscontract(α)),
           /* This should be improved to allow things like abs(x)/x to pass. */
           if not freeof(α,x) then (
               print("unable to show that ",α," is piecewise constant")),
-          antid : factor(-α * gamma_incomplete(subst(sol,?a+1),f))))),
+          antid : factor(-α * gamma_incomplete(subst(sol,a+1),f))))),
    antid);
 
 /* seed for integrate(α x^a * (1-x)^b,x) */
