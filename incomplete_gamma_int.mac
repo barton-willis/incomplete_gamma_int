@@ -97,11 +97,15 @@ hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfun, a : gensym(), 
       de : b*(mu^2*(diff(sigma,x,1))-mu*(diff(mu,x,1))*sigma-mu*(diff(mu,x,2))+
            2*(diff(mu,x,1))^2)+(mu*sigma-diff(mu,x,1)-a*mu^2-mu^2)*
            (mu*sigma-diff(mu,x,1)-b*mu^2-a*mu^2-mu^2),
+
+      /* collect the numerators of a pfd of de*/
       de : partfrac(gfactor(de),x),
       eqs : if safe_op(de) = "+" then args(de) else [de],
       eqs : map(ratnumer, eqs),
       eqs : map(lambda([s], ratp_dense_coeffs(s,x)),eqs),
-      eqs : xreduce('append, eqs),   
+      eqs : xreduce('append, eqs), 
+      eqs : gfactor(eqs),
+      eqs : quotify(eqs,'a, 'b),
       sol : solve_special_environment(eqs,[a,b]),
       if sol # [] and sol # 'all then (     
         sol : first(sol),
