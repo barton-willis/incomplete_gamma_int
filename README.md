@@ -13,17 +13,20 @@ Likely, I should rename the project.
 
 ### Examples
 
-Below are two examples:
+Below are some examples:
 
 ```maxima
 (%i1) my_int(sqrt(x-1) * sqrt(x) * (2*x-1) * %e^(x-x^2), x);
 (%o1) -gamma_incomplete(3/2, (x-1)*x)
 
-(%i2)	my_int(x^2*sqrt(1-x^2)^(1/3),x);
-(%o2)	(hypergeometric([-(1/6),3/2],[5/2],x^2)*x^3)/3
+(%i2) my_int(x^2*sqrt(1-x^2)^(1/3),x);
+(%o2) (hypergeometric([-(1/6),3/2],[5/2],x^2)*x^3)/3
 
-(%i3)	my_int(((2*(x-5)^(2/3))/(x-7)^(8/3)),x);
-(%o3)	-((3*(x-5)*(x^2-10*x+25)^(1/3))/(5*(x-7)*(x^2-14*x+49)^(1/3)))
+(%i3) my_int(((x-1)*(x+1)*(x^2+1)^(2/3))/x^(8/3),x);
+(%o3) (3*(x^2+1)*(x^4+2*x^2+1)^(1/3))/(5*x^(5/3))
+
+(%i4) my_int((x-1)^(2/3)*x^(2/3)*(2*x-1)*sqrt(-x^2+x+1),x);
+(%o4) (3*hypergeometric([-(1/2),5/3],[8/3],(x-1)*x)*(x-1)^(5/3)*x^(5/3))/5
 
 
  
