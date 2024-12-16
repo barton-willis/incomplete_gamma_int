@@ -81,7 +81,7 @@ incomplete_gamma_int(e,x) := block([sigma, mu, kerns, n, N, resfun, a : gensym()
 
 /* seed for integrate(α x^a * (1-x)^b,x) */
 hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfun, a : gensym(), b : gensym(),
-   de, eqs, sol, α, f, k : 1, αα, aa, bb, ff, antid : false, errormsg : false],
+   de, eqs, sol, solx, α, f, k : 1, αα, aa, bb, ff, antid : false, errormsg : false],
 
    sigma : partfrac(gfactor(logdiff(e,x)),x),
    kerns : if safe_op(sigma) = "+" then args(sigma) else [sigma],
@@ -107,10 +107,16 @@ hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfun, a : gensym(), 
       eqs : gfactor(eqs),
       eqs : quotify(eqs,'a, 'b),
       sol : solve_special_environment(eqs,[a,b]),
-      if sol # [] and sol # 'all then (     
-        sol : first(sol),
-        f : (mu*sigma-diff(mu,x,1)+(-a-1)*mu^2)/(mu*sigma-diff(mu,x,1)+(-b-a-1)*mu^2),       
-        f : errcatch(ratsimp(subst(sol, f))),
+      if sol # [] and sol # 'all then (   
+
+        f : [],
+        while sol # [ ] and f = [] do (
+          solx : pop(sol),
+          f : (mu*sigma-diff(mu,x,1)+(-a-1)*mu^2)/(mu*sigma-diff(mu,x,1)+(-b-a-1)*mu^2),       
+          f : errcatch(ratsimp(subst(solx, f)))),
+      
+        sol : solx,
+
         if f # [] then (
           f : first(f),
           α : subst(sol, ratsimp(e / (diff(f,x) * f^a * (1-f)^b))), 
@@ -120,7 +126,7 @@ hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfun, a : gensym(), 
               print("unable to show that ",α," is piecewise constant")),
 
           [αα,aa,bb,ff] : subst(sol, [α,a,b,f]),
-          /* Maybe optionally apply hypergeometric_simp?*/   
+          /* Maybe optionally apply hypergeometric_simp?*/  
           if not (integerp(aa) and 1 + aa <= 0) then (
              antid : factor(αα * f^(1+aa) * hypergeometric([1+aa, -bb], [2+aa], f)/(1+aa)))))),
    antid);
@@ -141,8 +147,8 @@ power_int(e,x) := block([sigma, mu, kerns, n, N, resfun, de, eqs, f, k : 1, anti
       de : gfactor(de),
       if equal(de,0) then (   
         f : factor(exp(integrate(mu,x))),  
-        if askequal(factor(radcan(diff(f,x))),0) # 'yes then (
-           α : ratsimp(e /diff(f,x)), 
+        if mu # 0 then (
+           α : ratsimp(e / diff(f,x)), 
            α : block([rootsconmode : 'all], rootscontract(α)),
            /* This should be improved to allow things like abs(x)/x to pass. */
            if not freeof(α,x) then (
