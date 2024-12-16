@@ -33,7 +33,7 @@ Below are some examples:
 (%o5)	(3*hypergeometric([-(1/2),4/3],[7/3],(x^2+1)/x)*(x^2+1)*(x^8-2*x^6+2*x^2-1)^(1/3))/(4*x^(4/3)*(x^6-3*x^4+3*x^2-1)^(1/3))
 ```
 
-### Mathematica ® Integration Example
+### Mathematica ® integration example
 
 Here, we use both plain Mathematica (version 14.1) as well as the [Rubi integrator](https://rulebasedintegration.org/) for example (%o5) from above. Neither gives a satisfactory antiderivative:
 
@@ -53,6 +53,6 @@ Out[16]= 6 Subst[Int[Sqrt[-1 + x^6 - x^12] (1 + x^12)^(1/3), x], x, x^(1/6)]
            - 6 Subst[Int[(Sqrt[-1 + x^6 - x^12] (1 + x^12)^(1/3))/x^12, x], x, x^(1/6)]
 ```
  
-### Trademark Attribution
+### Trademark attribution
 
 Mathematica is a registered trademark of Wolfram Research, Inc.
