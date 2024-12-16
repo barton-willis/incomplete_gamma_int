@@ -36,8 +36,11 @@ Below are some examples:
 ### Mathematica® Integration Example
 
 Here, we use both plain Mathematica (version 14.1) as well as the Rubi integrator for example (%o5) from above. 
-Neither gives a satisfactory antiderivative. For details about Rubi, see [Rule-Based Integration System](https://rulebasedintegration.org/).
+Neither gives a satisfactory antiderivative. For details about Rubi, see [Rule-Based Integration System](https://rulebasedintegration.org/). 
 
+This example shows that the method used in the `incomplete_gamma_int` package can
+find some antiderivatives that other packages are not able to find. But I am _not_ suggesting that the package `incomplete_gamma_int` is in any way competitive to 
+Mathematica or Rubi.
 ```
 In[14]:= Integrate[(Sqrt[-x^2 + x - 1] (x^2 - 1) (x^2 + 1)^(1/3))/x^(17/6), x]
 
@@ -50,6 +53,7 @@ In[16]:= Int[(Sqrt[-x^2 + x - 1] (x^2 - 1) (x^2 + 1)^(1/3))/x^(17/6), x]
 Out[16]= 6 Subst[Int[Sqrt[-1 + x^6 - x^12] (1 + x^12)^(1/3), x], x, x^(1/6)] 
            - 6 Subst[Int[(Sqrt[-1 + x^6 - x^12] (1 + x^12)^(1/3))/x^12, x], x, x^(1/6)]
 ```
+ 
  
 ### Trademark Attribution
 
