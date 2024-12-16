@@ -1,17 +1,17 @@
-## Automated derivative divides for symbolic integration
+## Automated Substitution Methods for Symbolic Integration
 
 The Maxima CAS package `incomplete_gamma_int` attempts to find a change of variable that converts 
-a given integrand into either the form $\int \mathrm{e}^{-t} t^a  \mathrm{d}t$ or
-the form $\int t^a (1-t)^b  \mathrm{d}t$. When successful, the package returns the 
+a given integrand into either the form $\int \mathrm{e}^{-t} t^a  \, \mathrm{d}t$ or
+the form $\int t^a (1-t)^b \, \mathrm{d}t$. When successful, the package will return the 
 antiderivative in terms of either the incomplete gamma function or the Gauss hypergeometric function. 
 
-The method is akin to an automatic derivative divides (integration by substitution)
-with a seed function that involves a so-called special function.
+The method is akin to an automatic derivative divide (integration by substitution)
+with a seed function involving a so-called special function. This project started with only
+the [incomplete gamma function](https://dlmf.nist.gov/8.2) as a seed, and then I extended it 
+to other seed functions. Likely, I should rename the project.
 
-This project started with just the `incomplete_gamma_int` case, and then I extended it.
-Likely, I should rename the project.
 
-### Examples
+### Example Integrals
 
 Below are some examples:
 
@@ -28,17 +28,15 @@ Below are some examples:
 (%i4) my_int((x-1)^(2/3)*x^(2/3)*(2*x-1)*sqrt(-x^2+x+1),x);
 (%o4) (3*hypergeometric([-(1/2),5/3],[8/3],(x-1)*x)*(x-1)^(5/3)*x^(5/3))/5
 
-(%i5)	my_int((sqrt(-x^2+x-1)*(x^2-1)*(x^2+1)^(1/3))/x^(17/6),x);
-
-(%o5)	(3*hypergeometric([-(1/2),4/3],[7/3],(x^2+1)/x)*(x^2+1)*(x^8-2*x^6+2*x^2-1)^(1/3))/(4*x^(4/3)*(x^6-3*x^4+3*x^2-1)^(1/3))
+(%i5) my_int((sqrt(-x^2+x-1)*(x^2-1)*(x^2+1)^(1/3))/x^(17/6),x);
+(%o5) (3*hypergeometric([-(1/2),4/3],[7/3],(x^2+1)/x)*(x^2+1)*(x^8-2*x^6+2*x^2-1)^(1/3)) 
+      / (4*x^(4/3)*(x^6-3*x^4+3*x^2-1)^(1/3))
 ```
 
-### Mathematica ® integration example
+### Mathematica® Integration Example
 
-Here, we use both plain Mathematica (version 14.1) as well as the [Rubi integrator](https://rulebasedintegration.org/) for example (%o5) from above. Neither gives a satisfactory antiderivative:
-
-
-
+Here, we use both plain Mathematica (version 14.1) as well as the Rubi integrator for example (%o5) from above. 
+Neither gives a satisfactory antiderivative. For details about Rubi, see [Rule-Based Integration System](https://rulebasedintegration.org/).
 
 ```
 In[14]:= Integrate[(Sqrt[-x^2 + x - 1] (x^2 - 1) (x^2 + 1)^(1/3))/x^(17/6), x]
@@ -53,6 +51,6 @@ Out[16]= 6 Subst[Int[Sqrt[-1 + x^6 - x^12] (1 + x^12)^(1/3), x], x, x^(1/6)]
            - 6 Subst[Int[(Sqrt[-1 + x^6 - x^12] (1 + x^12)^(1/3))/x^12, x], x, x^(1/6)]
 ```
  
-### Trademark attribution
+### Trademark Attribution
 
 Mathematica is a registered trademark of Wolfram Research, Inc.
