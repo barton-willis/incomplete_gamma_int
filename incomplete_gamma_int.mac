@@ -47,7 +47,7 @@ digits(n,m,base) := block([d : []],
 'e' to the form integrate(x^a * exp(-x), x) = -gamma_incomplete(1+a,x). This
 method will be successful when the derivative change of variables is a product
 of powers of the factors of the logarithmic derivative of the integrand 'e'. */
-incomplete_gamma_int(e,x) := block([sigma, mu, kerns, n, N, resfun, a : gensym(),
+incomplete_gamma_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(),
    de, eqs, sol, α, f, k : 1, antid : false, errormsg : false],
    sigma : partfrac(gfactor(ratsimp(logdiff(e,x))),x),
    kerns : if safe_op(sigma) = "+" then args(sigma) else [sigma],
@@ -80,7 +80,7 @@ incomplete_gamma_int(e,x) := block([sigma, mu, kerns, n, N, resfun, a : gensym()
    antid);
 
 /* seed for integrate(α x^a * (1-x)^b,x) */
-hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfun, a : gensym(), b : gensym(),
+hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(), b : gensym(),
    de, eqs, sol, solx, α, f, k : 1, αα, aa, bb, ff, antid : false, errormsg : false],
 
    sigma : partfrac(gfactor(logdiff(e,x)),x),
@@ -131,7 +131,7 @@ hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfun, a : gensym(), 
    antid);
 
 /* seed for integrate(α x^a,x) */
-power_int(e,x) := block([sigma, mu, kerns, n, N, resfun, de, eqs, f, k : 1, antid : false, errormsg : false],
+power_int(e,x) := block([sigma, mu, kerns, n, N, resfn, de, eqs, f, k : 1, antid : false, errormsg : false],
 
    sigma : partfrac(gfactor(logdiff(e,x)),x),
    kerns : if safe_op(sigma) = "+" then args(sigma) else [sigma],
