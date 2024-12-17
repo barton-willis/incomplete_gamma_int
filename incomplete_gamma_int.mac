@@ -7,6 +7,13 @@
 
 load(ratpow);
 load(quotify);
+/* The function 'solve' evaluates its arguments. This code uses a workaround of this undocumented
+   (miss) feature of 'solve' by quoting variables. The function 'quotify' substitutes a quoted mapatom for
+   an unquoted mapatom. If this 'solve' feature is removed, the calls to `quotify` in this code
+   should be removed.  Possibly another workaround is to use `algsys' not `solve.' Another workaround
+   is to give the gensym variables defined in complete_gamma_int (and friends) weird names like '?a' 
+   instead of 'a' */
+load(quotify);
 
 my_int(e,x) := block([antid : false, methods],
   methods : ['power_int, 'incomplete_gamma_int, 'hypergeometric_int],
