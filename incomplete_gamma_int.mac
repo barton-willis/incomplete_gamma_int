@@ -21,11 +21,17 @@ my_int(e,x) := block([antid : false, methods],
     antid : fn(e,x)),
   antid);
   
-/* Return solve(e,x) in an environment with progammode : true, and ... globalsolve : false. */
+/* Return solve(e,x) in an environment with progammode : true, and ... globalsolve : false. 
+ 
+   We help 'solve' by immediately returning an empty list when the equation list contains a 
+   nonzero numeric member. This trap speeds up some integrals.*/
 solve_special_environment(e,x) := block([programmode : true, backsubst : true, realonly : false,
  breakup : true, solveexplicit : true, solvenullwarn : false, solvefactors : true, solveradcan : true,
  solvetrigwarn : false, solvedecomposes : true, globalsolve : false],
-   solve(e,x))$
+   if some(lambda([s], numberp(s) and s # 0),e) then (
+     [])
+   else (
+     solve(delete(0,e),x)))$
 
 /* When 'e' is a mapatom, return false; otherwise return op(e) with inflag set to true.*/
 safe_op(e) := block([inflag : true], if mapatom(e) then false else op(e));
