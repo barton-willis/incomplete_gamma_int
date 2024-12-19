@@ -139,7 +139,7 @@ hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(), b
    antid);
 
 /* seed for integrate(α x^a,x) */
-power_int(e,x) := block([sigma, mu, kerns, n, N, resfn, de, eqs, f, k : 1, antid : false, errormsg : false],
+power_int(e,x) := block([α, sigma, mu, kerns, n, N, resfn, de, eqs, f, k : 1, antid : false, errormsg : false],
 
    sigma : partfrac(gfactor(logdiff(e,x)),x),
    kerns : if safe_op(sigma) = "+" then args(sigma) else [sigma],
