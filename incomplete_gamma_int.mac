@@ -21,7 +21,7 @@ my_int(e,x) := block([antid : false, methods],
     antid : fn(e,x)),
   antid);
   
-/* Return solve(e,x) in an environment with progammode : true, and ... globalsolve : false. 
+/* Return solve(e,x) in an environment with programmode : true, and ... globalsolve : false. 
  
    We help 'solve' by immediately returning an empty list when the equation list contains a 
    nonzero numeric member. This trap speeds up some integrals.*/
