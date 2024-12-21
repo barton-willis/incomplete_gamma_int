@@ -6,11 +6,12 @@
  License: CC0 1.0 Universal (https://creativecommons.org/publicdomain/zero/1.0/) */
 
 load(ratpow);
+load(unwind_protect);
 load(quotify);
 /* The function 'solve' evaluates its arguments. This code uses a workaround of this undocumented
    (miss) feature of 'solve' by quoting variables. The function 'quotify' substitutes a quoted mapatom for
    an unquoted mapatom. If this 'solve' feature is removed, the calls to `quotify` in this code
-   should be removed.  Possibly another workaround is to use `algsys' not `solve.' Another workaround
+   should be removed. Possibly another workaround is to use `algsys' not `solve.' Another workaround
    is to give the gensym variables defined in complete_gamma_int (and friends) weird names like '?a' 
    instead of 'a' */
 load(quotify);
@@ -21,6 +22,17 @@ my_int(e,x) := block([antid : false, methods],
     antid : fn(e,x)),
   antid);
   
+equation_reduce(eq,fcts) := block([inflag : true, cntx : supcontext()],
+  unwind_protect(
+     (map('assume, fcts),
+      eq : factor(eq),
+      eq : if safe_op(eq) = "*" then args(eq) else [eq],
+      eq : map(lambda([s], if safe_op(s) = "^" then first(s) else s), eq),
+      eq : map(lambda([s], if member(csign(s),['neq, 'pn, 'pos]) then 1 else s), eq),
+      xreduce("*",eq)),
+  killcontext(cntx)));
+
+ 
 /* Return solve(e,x) in an environment with programmode : true, and ... globalsolve : false. 
  
    We help 'solve' by immediately returning an empty list when the equation list contains a 
@@ -93,7 +105,7 @@ incomplete_gamma_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(),
 
 /* seed for integrate(α x^a * (1-x)^b,x) */
 hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(), b : gensym(),
-   de, eqs, sol, solx, α, f, k : 1, αα, aa, bb, ff, antid : false, errormsg : false],
+   de, eqs, sol, solx, α, f, k : 1, αα, aa, bb, ff, antid : false, errormsg : false, bts, fcts : []],
 
    sigma : partfrac(gfactor(logdiff(e,x)),x),
    kerns : if safe_op(sigma) = "+" then args(sigma) else [sigma],
@@ -103,7 +115,13 @@ hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(), b
    n : length(kerns),
    N : 3^n,
    while  k <= N and (antid = false) do (
-      mu : xreduce("+", map(resfn, kerns, digits(k,n,3))),
+      bts : digits(k,n,3),
+      mu : xreduce("+", map(resfn, kerns, bts)),
+
+      fcts : [],
+      if member(1,bts) then push(notequal(a+1,0), fcts),
+      if member(2,bts) then push(notequal(a+b+1,0), fcts),
+
       k : k + 1,
       
       de : b*(mu^2*(diff(sigma,x,1))-mu*(diff(mu,x,1))*sigma-mu*(diff(mu,x,2))+
@@ -111,6 +129,7 @@ hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(), b
            (mu*sigma-diff(mu,x,1)-b*mu^2-a*mu^2-mu^2),
 
       eqs : ratp_dense_coeffs(ratnumer(de),x),
+      eqs : map(lambda([s], equation_reduce(s, fcts)), eqs),
       eqs : quotify(eqs,'a, 'b),
       sol : solve_special_environment(eqs,[a,b]),
 
