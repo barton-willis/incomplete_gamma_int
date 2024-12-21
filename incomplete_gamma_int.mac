@@ -87,6 +87,7 @@ incomplete_gamma_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(),
       de : mu^2 *(diff(sigma,x) - mu*sigma + (a + 1) * mu^2) + mu*(mu-sigma)*diff(mu,x) - 
            mu*diff(mu,x,2) + 2*diff(mu,x)^2,      
       eqs : ratp_dense_coeffs(de,x),
+      eqs : map(lambda([s], equation_reduce(s,[notequal(a+1,0)])),eqs),
       eqs : quotify(eqs,'a),
       sol : solve_special_environment(eqs,[a]),
       if sol # [] and sol # 'all then (     
