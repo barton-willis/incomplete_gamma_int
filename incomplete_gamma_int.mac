@@ -22,6 +22,9 @@ my_int(e,x) := block([antid : false, methods],
     antid : fn(e,x)),
   antid);
   
+/* Factor eq, replace factors of the form X^n by X and nonvanishing factors by 1. The second argument
+   'fcts' should be a list of facts that can be assumed, for example notequal(p,0). This function
+   creates a super context, assumes the facts, and then kills the new context. */
 equation_reduce(eq,fcts) := block([inflag : true, cntx : supcontext()],
   unwind_protect(
      (map('assume, fcts),
@@ -171,7 +174,6 @@ power_int(e,x) := block([α, sigma, mu, kerns, n, N, resfn, de, eqs, f, k : 1, a
       mu : xreduce("+", map(resfn, kerns, digits(k,n,2))),
       k : k + 1,      
       de : -(mu*sigma)+diff(mu,x,1)+mu^2,
-      de : gfactor(de),
       if equal(de,0) then (   
         f : factor(exp(integrate(mu,x))),  
         if mu # 0 then (
