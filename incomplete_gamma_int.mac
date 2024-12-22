@@ -17,7 +17,7 @@ load(quotify);
 load(quotify);
 
 my_int(e,x) := block([antid : false, methods],
-  methods : ['power_int, 'incomplete_gamma_int, 'hypergeometric_int],
+  methods : ['power_int, 'incomplete_gamma_int, 'hypergeometric_int, 'appell_int],
   for fn in methods while antid = false do (
     antid : fn(e,x)),
   antid);
@@ -109,7 +109,7 @@ incomplete_gamma_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(),
 
 /* seed for integrate(α x^a * (1-x)^b,x) */
 hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(), b : gensym(),
-   de, eqs, sol, solx, α, f, k : 1, αα, aa, bb, ff, antid : false, errormsg : false, bts, fcts : []],
+   de, eqs, sol, solx, α, f, k : 1, αα, aa, bb, ff, fff, antid : false, errormsg : false, bts, fcts : []],
 
    sigma : partfrac(gfactor(logdiff(e,x)),x),
    kerns : if safe_op(sigma) = "+" then args(sigma) else [sigma],
@@ -161,7 +161,7 @@ hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(), b
              antid : factor(αα * f^(1+aa) * hypergeometric([1+aa, -bb], [2+aa], f)/(1+aa)))))),
    antid);
 
-/* seed for integrate(α x^a,x) */
+/* seed integrate(α x^a,x) */
 power_int(e,x) := block([α, sigma, mu, kerns, n, N, resfn, de, eqs, f, k : 1, antid : false, errormsg : false],
 
    sigma : partfrac(gfactor(logdiff(e,x)),x),
@@ -184,4 +184,75 @@ power_int(e,x) := block([α, sigma, mu, kerns, n, N, resfn, de, eqs, f, k : 1, a
               print("unable to show that ",α," is piecewise constant")),
            antid : factor(α * f)))),
          
+   antid);
+
+/* seed: integrate(α x^a (1-x)^b (1-τ x)^c,x) */
+appell_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(), b : gensym(),
+   de, eqs, sol, solx, α, f, k : 1, αα, aa, bb, ff, fff, antid : false, errormsg : false, bts, 
+   fcts : [],P0,P1,P2,cc, τ,ττ],
+
+   sigma : partfrac(gfactor(logdiff(e,x)),x),
+   kerns : if safe_op(sigma) = "+" then args(sigma) else [sigma],
+   kerns : sublist(kerns, lambda([s], pole_order(s,x) = 1)),
+   resfn : lambda([z,k], z : ratsimp(z - logdiff(z,x)), if k = 0 then 0 elseif k = 1 then z/(a+1) else z/(1+a+b+c)),
+
+   n : length(kerns),
+   N : 3^n,
+   while  k <= N and (antid = false) do (
+      bts : digits(k,n,3),
+      mu : xreduce("+", map(resfn, kerns, bts)),
+
+      fcts : [],
+      if member(1,bts) then push(notequal(a+1,0), fcts),
+      if member(2,bts) then push(notequal(a+b+c+1,0), fcts),
+      push(notequal(τ,0),fcts),
+      push(notequal(τ-1,0),fcts),
+      k : k + 1,
+
+      P0 : -(mu*sigma)+diff(mu,x,1)+(a+1)*mu^2,
+      P1 : (mu*sigma-diff(mu,x,1)+(-c-a-1)*mu^2)*τ+mu*sigma-diff(mu,x,1)+(-b-a-1)*mu^2,
+      P2 : (-(mu*sigma)+diff(mu,x,1)+(c+b+a+1)*mu^2)*τ,
+
+      de : P0^2*(2*P2*mu+diff(P2,x,1))^2-P0*(P1^2*P2*mu^2+P1^2*(diff(P2,x,1))*mu
+           +4*(diff(P0,x,1))*P2^2*mu+2*(diff(P0,x,1))*P2*(diff(P2,x,1))
+           +P1*(diff(P1,x,1))*(diff(P2,x,1))-(diff(P1,x,1))^2*P2)+(diff(P0,x,1))*(P1^2*P2*mu
+           +P1^2*(diff(P2,x,1))+(diff(P0,x,1))*P2^2-P1*(diff(P1,x,1))*P2),
+      
+      eqs : ratp_dense_coeffs(ratnumer(de),x),
+      eqs : map(lambda([s], equation_reduce(s, fcts)), eqs),
+      eqs : quotify(eqs,'a, 'b, 'c, 'τ),
+
+      sol : solve_special_environment(eqs,[a,b,c,τ]),
+      if sol # [] and sol # 'all then (   
+
+        f : [],
+        while sol # [ ] and f = [] do (
+          solx : pop(sol),
+          fff : solve(subst(solx, P0 + P1*fff + P2*fff^2),fff), 
+          f : errcatch(ratsimp(subst(solx, fff)))),
+
+        sol : solx,
+
+        print("68: f = ",f),
+
+        if f # [] then (
+          f : rhs(first(first(f))),
+
+          print("f =",f),
+
+          α : subst(sol, ratsimp(e/(diff(f,x) * f^a * (1-f)^b * (1 - τ*f)^c))), 
+          α : block([rootsconmode : 'all], rootscontract(α)),
+          /* This should be improved to allow things like abs(x)/x to pass. */
+          if not freeof(α,x) then (
+              print("unable to show that ",α," is piecewise constant")),
+
+          [αα,aa,bb,cc, ττ, ff] : subst(sol, [α,a,b,c,τ,f]),
+
+          print("1+aa = ", 1+aa),
+          print("bb+aa = ", bb+aa),
+
+          if 1 + aa # 0 then (
+             antid : αα * ff^(1+aa)*appell_1(1+aa,-bb,-cc,aa+2,ff, ττ*ff)/(aa+1))
+          elseif bb + aa # 0 then (
+             antid : αα * (ττ^cc*(-ff^(cc+bb))) * appell_1(-bb-aa,-bb,-cc,1-bb-cc,1/ff, 1/(ττ*ff))/(bb+cc))))),
    antid);
