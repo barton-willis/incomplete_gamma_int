@@ -35,7 +35,7 @@ Below are some examples:
 
 ### Mathematica® Integration Example
 
-Here, we use both plain Mathematica (version 14.1) as well as the Rubi integrator for Mathematica on example (%i5) from above. 
+Here, we use both plain Mathematica (version 14.1) as well as the Rubi integrator (version V4.17.3.0) for Mathematica on example (%i5) from above. 
 Neither gives a satisfactory antiderivative. For details about Rubi, see [Rule-Based Integration System](https://rulebasedintegration.org/). 
 
 This example shows that the method used in the `incomplete_gamma_int` package can
