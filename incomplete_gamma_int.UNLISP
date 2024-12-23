@@ -1,0 +1,18 @@
+This is the unlisp file for C:/Users/barto/OneDrive/Documents/GitHub/incomplete_gamma_int/incomplete_gamma_int/incomplete_gamma_int.mac
+warning: encountered undefined variable ratpow in translation.
+note: translating my_int
+note: translating solve_special_environment
+note: translating safe_op
+note: translating logdiff
+note: translating pole_order
+note: translating digits
+warning: push(second(n),d) is a special function without a full Lisp translation.
+warning: calling push(second(n),d) in compiled code might not have the desired effect.
+note: translating incomplete_gamma_int
+warning: not (k <= N and antid = false) is a special function without a full Lisp translation.
+warning: calling not (k <= N and antid = false) in compiled code might not have the desired effect.
+warning: encountered undefined variable resfn in translation.
+note: translating hypergeometric_int
+warning: not (k <= N and antid = false) is a special function without a full Lisp translation.
+warning: calling not (k <= N and antid = false) in compiled code might not have the desired effect.
+warning: encountered undefined variable ratnumer in translation.

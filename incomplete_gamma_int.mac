@@ -232,13 +232,8 @@ appell_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(), b : gensy
           f : errcatch(ratsimp(subst(solx, fff)))),
 
         sol : solx,
-
-        print("68: f = ",f),
-
         if f # [] then (
           f : rhs(first(first(f))),
-
-          print("f =",f),
 
           α : subst(sol, ratsimp(e/(diff(f,x) * f^a * (1-f)^b * (1 - τ*f)^c))), 
           α : block([rootsconmode : 'all], rootscontract(α)),
@@ -247,10 +242,6 @@ appell_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(), b : gensy
               print("unable to show that ",α," is piecewise constant")),
 
           [αα,aa,bb,cc, ττ, ff] : subst(sol, [α,a,b,c,τ,f]),
-
-          print("1+aa = ", 1+aa),
-          print("bb+aa = ", bb+aa),
-
           if 1 + aa # 0 then (
              antid : αα * ff^(1+aa)*appell_1(1+aa,-bb,-cc,aa+2,ff, ττ*ff)/(aa+1))
           elseif bb + aa # 0 then (

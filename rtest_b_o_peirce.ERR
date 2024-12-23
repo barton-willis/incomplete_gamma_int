@@ -1,0 +1,138 @@
+
+/* Maxima error log from tests in C:/Users/barto/OneDrive/Documents/GitHub/incomplete_gamma_int/incomplete_gamma_int/rtest_b_o_peirce.mac */
+
+/* Problem 1 (line 1) */
+my_int(a,x);
+/* Erroneous Result?:
+false */ 
+/* Expected result: */
+a*x;
+
+/* Problem 2 (line 4) */
+my_int(1/x,x);
+/* Erroneous Result?:
+false */ 
+/* Expected result: */
+log(x);
+
+/* Problem 3 (line 7) */
+my_int(x^m,x);
+/* Erroneous Result?:
+false */ 
+/* Expected result: */
+x^(m+1)/(m+1);
+
+/* Problem 4 (line 10) */
+my_int(exp(x),x);
+/* Erroneous Result?:
+false */ 
+/* Expected result: */
+exp(x);
+
+/* Problem 5 (line 13) */
+my_int(a^x*log(x),x);
+/* Erroneous Result?:
+false */ 
+/* Expected result: */
+a^x;
+
+/* Problem 6 (line 16) */
+my_int(1/(1+x^2),x);
+/* Erroneous Result?:
+false */ 
+/* Expected result: */
+atan(x);
+
+/* Problem 7 (line 19) */
+my_int(1/sqrt(1-x^2),x);
+/* Erroneous Result?:
+(sqrt(2)*hypergeometric([1/2,1/2],[3/2],-((x-1)/2))*(x-1)*sqrt(x+1))
+ /sqrt(1-x^2) */ 
+/* Expected result: */
+asin(x);
+
+/* Problem 8 (line 22) */
+my_int(1/(x*sqrt(x^2-1)),x);
+/* Erroneous Result?:
+error\-catch */ 
+/* Expected result: */
+asec(x);
+
+/* Problem 9 (line 25) */
+my_int(1/sqrt(2*x-x^2),x);
+/* Erroneous Result?:
+(sqrt(2)*hypergeometric([1/2,1/2],[3/2],-((x-2)/2))*(x-2)*sqrt(x))
+ /sqrt(-((x-2)*x)) */ 
+/* Expected result: */
+verasin(x);
+
+/* Problem 10 (line 28) */
+my_int(cos(x),x);
+/* Erroneous Result?:
+false */ 
+/* Expected result: */
+sin(x);
+
+/* Problem 11 (line 31) */
+my_int(sin(x),x);
+/* Erroneous Result?:
+false */ 
+/* Expected result: */
+-cos(x);
+
+/* Problem 12 (line 34) */
+my_int(cotan(x),x);
+/* Erroneous Result?:
+false */ 
+/* Expected result: */
+log(sin(x));
+
+/* Problem 13 (line 37) */
+my_int(tan(x),x);
+/* Erroneous Result?:
+false */ 
+/* Expected result: */
+-log(cos(x));
+
+/* Problem 14 (line 40) */
+my_int(tan(x)*sec(x),x);
+/* Erroneous Result?:
+false */ 
+/* Expected result: */
+sec(x);
+
+/* Problem 15 (line 43) */
+my_int(sec(x)^2,x);
+/* Erroneous Result?:
+false */ 
+/* Expected result: */
+tan(x);
+
+/* Problem 16 (line 46) */
+my_int(csc(x)^2,x);
+/* Erroneous Result?:
+false */ 
+/* Expected result: */
+-cotan(x);
+
+/* Problem 17 (line 51) */
+my_int(1/(a+b*x),x);
+/* Erroneous Result?:
+false */ 
+/* Expected result: */
+log(a+b*x)/a;
+
+/* Problem 18 (line 54) */
+my_int(1/(a+b*x)^2,x);
+/* Erroneous Result?:
+false */ 
+/* Expected result: */
+-1/(b*(a+b*x));
+
+/* Problem 19 (line 57) */
+my_int(1/(a+b*x)^3,x);
+/* Erroneous Result?:
+false */ 
+/* Expected result: */
+-1/(2*b*(a+b*x)^2);
+

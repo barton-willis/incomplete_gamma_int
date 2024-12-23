@@ -1,0 +1,142 @@
+/* seed  integrate(α/sqrt((1-x^2)*(1-τ^2*x^2)),x) */
+incomplete_elliptic_first_kind_int(e,x) := block([sigma, mu, kerns, n, N, resfn, 
+   de, eqs, sol, α, ττ, f, k : 1, feq,ff, antid : false, errormsg : false],
+
+   sigma : partfrac(gfactor(logdiff(e,x)),x),
+   kerns : if safe_op(sigma) = "+" then args(sigma) else [sigma],
+   kerns : sublist(kerns, lambda([s], pole_order(s,x) = 1)),
+   
+   resfn : lambda([z,k], 
+      if k = 0 then (
+        0)
+      elseif k = 1 then (
+        z - logdiff(z,x))
+      elseif k = 2 then (
+        -z + logdiff(z,x))
+      elseif k = 3 then (
+        (%i*z*(τ-1)*(τ+1)-%i*(τ-1)*(τ+1)*logdiff(z,x))/(2*τ))
+      else (
+        (-(%i*z*(τ-1)*(τ+1)) + %i*(τ-1)*(τ+1)*logdiff(z,x))/(2*τ))),
+   n : length(kerns),
+
+   print("kerns = ",kerns),
+
+   N : 5^n,
+   while  k <= N and (antid = false) do (
+      mu : xreduce("+", map(resfn, kerns, digits(k,n,5))),
+      k : k + 1,
+      
+      de : (mu*(diff(sigma,x,1))-2*mu*sigma^2+3*(diff(mu,x,1))*sigma-2*mu^2*sigma-diff(mu,x,2)
+           +2*mu*(diff(mu,x,1)))*(mu*(diff(sigma,x,1))-2*mu*sigma^2
+           +3*(diff(mu,x,1))*sigma+2*mu^2*sigma-diff(mu,x,2)-2*mu*(diff(mu,x,1)))*τ^4
+           -2*(mu^2*(diff(sigma,x,1))^2-4*mu^2*sigma^2*(diff(sigma,x,1))
+           +6*mu*(diff(mu,x,1))*sigma*(diff(sigma,x,1))
+           -2*mu*(diff(mu,x,2))*(diff(sigma,x,1))+8*mu^4*(diff(sigma,x,1))
+           +4*mu^2*sigma^4-12*mu*(diff(mu,x,1))*sigma^3+4*mu*(diff(mu,x,2))*sigma^2
+           +9*(diff(mu,x,1))^2*sigma^2-12*mu^4*sigma^2
+           -6*(diff(mu,x,1))*(diff(mu,x,2))*sigma
+           +16*mu^3*(diff(mu,x,1))*sigma+(diff(mu,x,2))^2-8*mu^3*(diff(mu,x,2))
+           +4*mu^2*(diff(mu,x,1))^2+8*mu^6)*τ^2+(mu*(diff(sigma,x,1))
+           -2*mu*sigma^2+3*(diff(mu,x,1))*sigma-2*mu^2*sigma-diff(mu,x,2)
+           +2*mu*(diff(mu,x,1)))*(mu*(diff(sigma,x,1))-2*mu*sigma^2
+           +3*(diff(mu,x,1))*sigma+2*mu^2*sigma-diff(mu,x,2)-2*mu*(diff(mu,x,1))),
+      de : partfrac(gfactor(de),x),
+      eqs : if safe_op(de) = "+" then args(de) else [de],
+      eqs : map(ratnum, eqs),
+      eqs : map(lambda([s], ratp_dense_coeffs(s,x)),eqs),
+      eqs : xreduce('append, eqs),   
+      sol : solve_special_environment(eqs,[τ]),
+      if sol # [] and sol # 'all then ( 
+        sol : first(sol),
+        feq : subst(sol, f^2*(mu*sigma-diff(mu,x,1))*(τ^2+1)-
+                         f^4*(mu*sigma-diff(mu,x,1)+mu^2)*τ^2-
+                         mu*sigma+diff(mu,x,1)+mu^2),
+
+        f : solve_special_environment(feq,f),
+        if f # [] and f # 'all then (
+          f : first(f),
+          α : errcatch(subst(sol, ratsimp(e / (diff(f,x) * sqrt((1-f^2) * (1-τ^2 * f^2)))))), 
+          if  α # [] then (
+            α : block([rootsconmode : 'all], rootscontract(first(α))),
+            /* This should be improved to allow things like abs(x)/x to pass. */
+            if not freeof(α,x) then (
+               print("unable to show that ",α," is piecewise constant")),
+            [ττ,f] : subst(sol, [τ,f]),
+            antid : factor(α * EllipticF(asin(f),ττ^2)))))),
+   antid);
+
+
+appell_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(), b : gensym(),
+   de, eqs, sol, solx, α, f, k : 1, αα, aa, bb, ff, antid : false, errormsg : false, bts, fcts : []],
+
+   sigma : partfrac(gfactor(logdiff(e,x)),x),
+   kerns : if safe_op(sigma) = "+" then args(sigma) else [sigma],
+   kerns : sublist(kerns, lambda([s], pole_order(s,x) = 1)),
+   resfn : lambda([z,k], z : ratsimp(z - logdiff(z,x)), if k = 0 then 0 elseif k = 1 then z/(a+1) else z/(1+a+b+c)),
+
+   n : length(kerns),
+   N : 3^n,
+   while  k <= N and (antid = false) do (
+      bts : digits(k,n,3),
+      mu : xreduce("+", map(resfn, kerns, bts)),
+
+      fcts : [],
+      if member(1,bts) then push(notequal(a+1,0), fcts),
+      if member(2,bts) then push(notequal(a+b+c+1,0), fcts),
+      push(notequal(τ,0),fcts),
+      push(notequal(τ-1,0),fcts),
+      k : k + 1,
+
+      P0 : -(mu*sigma)+diff(mu,x,1)+(a+1)*mu^2,
+      P1 : (mu*sigma-diff(mu,x,1)+(-c-a-1)*mu^2)*τ+mu*sigma-diff(mu,x,1)+(-b-a-1)*mu^2,
+      P2 : (-(mu*sigma)+diff(mu,x,1)+(c+b+a+1)*mu^2)*τ,
+
+      de : P0^2*(2*P2*mu+diff(P2,x,1))^2-P0*(P1^2*P2*mu^2+P1^2*(diff(P2,x,1))*mu
+           +4*(diff(P0,x,1))*P2^2*mu+2*(diff(P0,x,1))*P2*(diff(P2,x,1))
+           +P1*(diff(P1,x,1))*(diff(P2,x,1))-(diff(P1,x,1))^2*P2)+(diff(P0,x,1))*(P1^2*P2*mu
+           +P1^2*(diff(P2,x,1))+(diff(P0,x,1))*P2^2-P1*(diff(P1,x,1))*P2),
+      
+      eqs : ratp_dense_coeffs(ratnumer(de),x),
+      eqs : map(lambda([s], equation_reduce(s, fcts)), eqs),
+      eqs : quotify(eqs,'a, 'b),
+      sol : solve_special_environment(eqs,[a,b]),
+      if sol # [] and sol # 'all then (   
+
+        f : [],
+        while sol # [ ] and f = [] do (
+          solx : pop(sol),
+          f : solve(P0 + P1*f + P2*f^2,f)     
+          f : errcatch(ratsimp(subst(solx, f))),
+          sol : solx,
+
+        if f # [] then (
+          f : first(f),
+          α : subst(sol, ratsimp(e/(diff(f,x) * f^a * (1-f)^b * (1 - τ*f)))), 
+          α : block([rootsconmode : 'all], rootscontract(α)),
+          /* This should be improved to allow things like abs(x)/x to pass. */
+          if not freeof(α,x) then (
+              print("unable to show that ",α," is piecewise constant")),
+
+          [αα,aa,bb,cc, ττ, ff] : subst(sol, [α,a,b,c,τ,f]),
+          /* Maybe optionally apply hypergeometric_simp?*/  
+          if 1 + aa # 0 then (
+             antid : αα * Appell(1+aa,-bb,-cc,aa+2,ff, τ*ff)/(aa+1))
+          elseif bb+aa #0 then (
+             antid : αα * Appell(-bb-aa,-bb,-cc,1-bb-cc,1/ff, 1/(τ*ff))/(bb+cc))
+   antid);
+  
+          
+
+
+      
+
+
+  
+     
+          
+
+
+      
+
+
+  
