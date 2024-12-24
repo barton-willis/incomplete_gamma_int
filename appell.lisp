@@ -1,7 +1,13 @@
 (in-package :maxima)
 
-(defmvar $use_appell_f1_integral_rep nil)
+(defmvar $use_appell_f1_integral_rep nil
+    "When 'true', the general simplifier returns and  integral representation of 'appell_f1"
+    :properties ((assign #'(lambda (s a)
+          (if (or (eq a nil) (eq a t))
+              t
+              (mtell "The value of ~M must be either 't' or 'false, but found ~M . ~% " s a))))))
 
+  
 (def-simplifier appell_f1 (a b1 b2 c x y)
   (cond
     ((eql 0 y)
