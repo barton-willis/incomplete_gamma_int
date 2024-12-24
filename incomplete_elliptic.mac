@@ -67,7 +67,8 @@ incomplete_elliptic_first_kind_int(e,x) := block([sigma, mu, kerns, n, N, resfn,
 
 
 appell_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(), b : gensym(),
-   de, eqs, sol, solx, α, f, k : 1, αα, aa, bb, ff, antid : false, errormsg : false, bts, fcts : []],
+   de, eqs, sol, solx, α, f, k : 1, αα, aa, bb, ff, antid : false, errormsg : false, bts, 
+   fcts : [],P0,P1,P2],
 
    sigma : partfrac(gfactor(logdiff(e,x)),x),
    kerns : if safe_op(sigma) = "+" then args(sigma) else [sigma],
@@ -98,8 +99,8 @@ appell_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(), b : gensy
       
       eqs : ratp_dense_coeffs(ratnumer(de),x),
       eqs : map(lambda([s], equation_reduce(s, fcts)), eqs),
-      eqs : quotify(eqs,'a, 'b),
-      sol : solve_special_environment(eqs,[a,b]),
+      eqs : quotify(eqs,'a, 'b, 'c, 'τ),
+      sol : solve_special_environment(eqs,[a,b,c,τ]),
       if sol # [] and sol # 'all then (   
 
         f : [],
@@ -111,14 +112,13 @@ appell_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(), b : gensy
 
         if f # [] then (
           f : first(f),
-          α : subst(sol, ratsimp(e/(diff(f,x) * f^a * (1-f)^b * (1 - τ*f)))), 
+          α : subst(sol, ratsimp(e/(diff(f,x) * f^a * (1-f)^b * (1 - τ*f)^cc))), 
           α : block([rootsconmode : 'all], rootscontract(α)),
           /* This should be improved to allow things like abs(x)/x to pass. */
           if not freeof(α,x) then (
               print("unable to show that ",α," is piecewise constant")),
 
           [αα,aa,bb,cc, ττ, ff] : subst(sol, [α,a,b,c,τ,f]),
-          /* Maybe optionally apply hypergeometric_simp?*/  
           if 1 + aa # 0 then (
              antid : αα * Appell(1+aa,-bb,-cc,aa+2,ff, τ*ff)/(aa+1))
           elseif bb+aa #0 then (

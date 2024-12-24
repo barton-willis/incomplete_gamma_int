@@ -1,54 +1,58 @@
 (in-package :maxima)
 
 (def-simplifier appell_1 (a b1 b2 c x y)
-        (cond ((eql 0 y) 
-               (ftake '%hypergeometric (ftake 'mlist a b1) (ftake 'mlist c) x))
+  (cond
+    ((eql 0 y)
+     (ftake '%hypergeometric (ftake 'mlist a b1) (ftake 'mlist c) x))
 
-              ((eql 0 x) 
-               (ftake '%hypergeometric (ftake 'mlist a b2) (ftake 'mlist c) y))
+    ((eql 0 x)
+     (ftake '%hypergeometric (ftake 'mlist a b2) (ftake 'mlist c) y))
 
-              ((alike1 x y)
-                (ftake '%hypergeometric (ftake 'mlist a (add b1 b2)) (ftake 'mlist c) x))
+    ((alike1 x y)
+     (ftake '%hypergeometric (ftake 'mlist a (add b1 b2)) (ftake 'mlist c) x))
 
-             ((alike1 (add a b1 b2) c)
-                (ftake 'mexpt (sub 1 (add x y)) (mul -1 a)))
+    ((alike1 (add a b1 b2) c)
+     (ftake 'mexpt (sub 1 (add x y)) (mul -1 a)))
 
-              ((great x y)
-                (ftake '%appell_1 a b2 b1 c y x))
+    ((great x y)
+     (ftake '%appell_1 a b2 b1 c y x))
 
-              ((alike1 y 1)
-                (mul (ftake '%hypergeometric (ftake 'mlist a b2) (ftake 'mlist c) 1)
-                     (ftake '%hypergeometric (ftake 'mlist a b1) (ftake 'mlist (sub c b1)) x)))
+    ((alike1 y 1)
+     (mul (ftake '%hypergeometric (ftake 'mlist a b2) (ftake 'mlist c) 1)
+          (ftake '%hypergeometric (ftake 'mlist a b1) (ftake 'mlist (sub c b1)) x)))
 
-              ((alike1 x (mul -1 x))
-                (ftake '%hypergeometric (ftake (div (add a 1) 2) (div a 2) b1) 
-                                        (ftake 'mlist (add (add c 1) 2) (div c 2)) (mul x x)))
+    ((alike1 x (mul -1 x))
+     (ftake '%hypergeometric
+            (ftake (div (add a 1) 2) (div a 2) b1)
+            (ftake 'mlist (add (add c 1) 2) (div c 2))
+            (mul x x)))
 
-              ;; http://dlmf.nist.gov/16.16.E1
-              ((alike1 c (add b1 b2))
-               (mul (ftake 'mexpt (sub 1 y) (mul -1 a))
-                    (ftake '%hypergeometric (ftake 'mlist a b1) (ftake 'mlist (add b1 b2))
-                                    (div (sub x y) (sub 1 y)))))
-                                    
-              (t (give-up))))
+    ;; http://dlmf.nist.gov/16.16.E1
+    ((alike1 c (add b1 b2))
+     (mul (ftake 'mexpt (sub 1 y) (mul -1 a))
+          (ftake '%hypergeometric (ftake 'mlist a b1) (ftake 'mlist (add b1 b2))
+                 (div (sub x y) (sub 1 y)))))
+
+    (t (give-up))))
 
 ;; Integral representation
 (defun integral-rep-appell-1 (a b1 b2 c x y)
   (let ((z ($gensym)))
-     (mul (div (ftake '%gamma c) (mul (ftake '%gamma a) (ftake '%gamma (sub c a))))
-          (ftake '%integrate 
-            (mul 
-              (ftake 'mexpt z (sub a 1))
-              (ftake 'mexpt (sub 1 z) (add c (mul -1 a) -1))
-              (ftake 'mexpt (sub 1 (mul x z)) (mul -1 b1))
-              (ftake 'mexpt (sub 1 (mul y z)) (mul -1 b2)) z 0 1)))))
+    (mul (div (ftake '%gamma c)
+              (mul (ftake '%gamma a) (ftake '%gamma (sub c a))))
+         (ftake '%integrate
+                (mul (ftake 'mexpt z (sub a 1))
+                     (ftake 'mexpt (sub 1 z) (add c (mul -1 a) -1))
+                     (ftake 'mexpt (sub 1 (mul x z)) (mul -1 b1))
+                     (ftake 'mexpt (sub 1 (mul y z)) (mul -1 b2)))
+                z 0 1)))))
 
-;; derivatives--we'll not attempt the derivatives with respect to the first four
+;; Derivatives--we'll not attempt the derivatives with respect to the first four
 ;; arguments.
 (defun diff-appell-1-x (a b1 b2 c x y)
-  (if (eql c 0) 
+  (if (eql c 0)
       nil
-     (div (mul a b1 (ftake '%appell_1 (add 1 a) (add 1 b1) b2 (add 1 c) x y)) c)))
+      (div (mul a b1 (ftake '%appell_1 (add 1 a) (add 1 b1) b2 (add 1 c) x y)) c)))
 
 (defun diff-appell-1-y (a b1 b2 c x y)
   (if (eql c 0)
@@ -57,15 +61,15 @@
 
 (defprop %appell_1
   ((a b1 b2 c x y)
-    nil 
-    nil
-    nil
-    nil
-    diff-appell-1-x
-    diff-appell-1-y) grad)
+   nil
+   nil
+   nil
+   nil
+   diff-appell-1-x
+   diff-appell-1-y)
+  grad)
 
-;; antiderivatives
-
+;; Antiderivatives
 (defun integrate-appell-1-x (a b1 b2 c x y)
   (div (mul (sub c 1) (ftake '%appell_1 (sub a 1) (sub b1 1) b2 (sub c 1) x y))
        (mul (sub a 1) (sub b1 1))))
@@ -75,11 +79,11 @@
        (mul (sub a 1) (sub b2 1))))
 
 (defprop %appell_1
- ((a b1 b2 c x y)
-   nil 
+  ((a b1 b2 c x y)
+   nil
    nil
    nil
    nil
    integrate-appell-1-x
-   integrate-appell-1-y) integral) 
-
+   integrate-appell-1-y)
+  integral)
