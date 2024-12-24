@@ -36,9 +36,9 @@
                  (div (sub x y) (sub 1 y)))))
 
     ((and $use_appell_f1_integral_rep 
-          (not (integerp c) (<= 0 c))
-          (not (integerp a) (<= 0 a))
-          (not (integerp (sub c a)) (<= 0 (- c a)))) 
+          (or (not (integerp c)) (< 0 c))
+          (or (not (integerp a)) (< 0 a))
+          (or (not (integerp (sub c a))) (< 0 (- c a))))
       (integral-rep-appell-f1 a b1 b2 c x y))
 
     (t (give-up))))
