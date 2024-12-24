@@ -6,7 +6,6 @@
           (if (or (eq a nil) (eq a t))
               t
               (mtell "The value of ~M must be either 't' or 'false, but found ~M . ~% " s a))))))
-
   
 (def-simplifier appell_f1 (a b1 b2 c x y)
   (cond
@@ -107,9 +106,11 @@
    integrate-appell-f1-y)
   integral)
 
-;; Use quad_qaws for floating point evaluation. 
+;; Use quad_qaws for floating point evaluation.
+
 (defun appell-f1-float (a b1 b2 c x y)
   (let ((s (gensym)) (g))
+    ;; Convert inputs to float
     (setq a ($float a)
           b1 ($float b1)
           b2 ($float b2)
@@ -117,12 +118,19 @@
           x ($float x)
           y ($float y))
 
-    (setq g (errcatch ($quad_qaws (div 1 (mul (ftake 'mexpt (sub 1 (mul x s)) b1) (ftake 'mexpt (sub 1 (mul y s)) b2))) 
-                s 0 1 (- a 1) (- c (+ a 1)) 1)))
+    ;; Check conditions and compute
+    (cond
+      ((and (< x 1) (< y 1))
+       (setq g (errcatch
+                ($quad_qaws
+                 (div 1
+                      (mul (ftake 'mexpt (sub 1 (mul x s)) b1)
+                           (ftake 'mexpt (sub 1 (mul y s)) b2)))
+                 s 0 1 (- a 1) (- c (+ a 1)) 1)))
 
-     (setq g (first g))
-    (if (eql 0 (fifth g))
-       (div (mul (ftake '%gamma c) (second g)) 
-          (mul (ftake '%gamma a) (ftake '%gamma (- c a))))
-       nil)))
-             
+       (setq g (first g))
+       (if (eql 0 (fifth g))
+           (div (mul (ftake '%gamma c) (second g))
+                (mul (ftake '%gamma a) (ftake '%gamma (- c a))))
+           nil))
+      (t nil))))
