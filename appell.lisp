@@ -1,5 +1,7 @@
 (in-package :maxima)
 
+(defmvar $use_appell_f1_integral_rep nil)
+
 (def-simplifier appell_f1 (a b1 b2 c x y)
   (cond
     ((eql 0 y)
@@ -32,6 +34,12 @@
      (mul (ftake 'mexpt (sub 1 y) (mul -1 a))
           (ftake '%hypergeometric (ftake 'mlist a b1) (ftake 'mlist (add b1 b2))
                  (div (sub x y) (sub 1 y)))))
+
+    ((and $use_appell_f1_integral_rep 
+          (not (integerp c) (<= 0 c))
+          (not (integerp a) (<= 0 a))
+          (not (integerp (sub c a)) (<= 0 (- c a)))) 
+      (integral-rep-appell-f1 a b1 b2 c x y))
 
     (t (give-up))))
 
