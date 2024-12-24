@@ -1,6 +1,6 @@
 (in-package :maxima)
 
-(def-simplifier appell_1 (a b1 b2 c x y)
+(def-simplifier appell_f1 (a b1 b2 c x y)
   (cond
     ((eql 0 y)
      (ftake '%hypergeometric (ftake 'mlist a b1) (ftake 'mlist c) x))
@@ -36,7 +36,7 @@
     (t (give-up))))
 
 ;; Integral representation
-(defun integral-rep-appell-1 (a b1 b2 c x y)
+(defun integral-rep-appell-f1 (a b1 b2 c x y)
   (let ((z ($gensym)))
     (mul (div (ftake '%gamma c)
               (mul (ftake '%gamma a) (ftake '%gamma (sub c a))))
@@ -45,45 +45,45 @@
                      (ftake 'mexpt (sub 1 z) (add c (mul -1 a) -1))
                      (ftake 'mexpt (sub 1 (mul x z)) (mul -1 b1))
                      (ftake 'mexpt (sub 1 (mul y z)) (mul -1 b2)))
-                z 0 1)))))
+                z 0 1))))
 
 ;; Derivatives--we'll not attempt the derivatives with respect to the first four
 ;; arguments.
-(defun diff-appell-1-x (a b1 b2 c x y)
+(defun diff-appell-f1-x (a b1 b2 c x y)
   (if (eql c 0)
       nil
-      (div (mul a b1 (ftake '%appell_1 (add 1 a) (add 1 b1) b2 (add 1 c) x y)) c)))
+      (div (mul a b1 (ftake '%appell_f1 (add 1 a) (add 1 b1) b2 (add 1 c) x y)) c)))
 
-(defun diff-appell-1-y (a b1 b2 c x y)
+(defun diff-appell-f1-y (a b1 b2 c x y)
   (if (eql c 0)
       nil
-      (div (mul a b2 (ftake '%appell_1 (add 1 a) b1 (add 1 b2) (add 1 c) x y)) c)))
+      (div (mul a b2 (ftake '%appell_f1 (add 1 a) b1 (add 1 b2) (add 1 c) x y)) c)))
 
-(defprop %appell_1
+(defprop %appell_f1
   ((a b1 b2 c x y)
    nil
    nil
    nil
    nil
-   diff-appell-1-x
-   diff-appell-1-y)
+   diff-appell-f1-x
+   diff-appell-f1-y)
   grad)
 
 ;; Antiderivatives
-(defun integrate-appell-1-x (a b1 b2 c x y)
-  (div (mul (sub c 1) (ftake '%appell_1 (sub a 1) (sub b1 1) b2 (sub c 1) x y))
+(defun integrate-appell-f1-x (a b1 b2 c x y)
+  (div (mul (sub c 1) (ftake '%appell_f1 (sub a 1) (sub b1 1) b2 (sub c 1) x y))
        (mul (sub a 1) (sub b1 1))))
 
-(defun integrate-appell-1-y (a b1 b2 c x y)
-  (div (mul (sub c 1) (ftake '%appell_1 (sub a 1) b1 (sub b2 1) (sub c 1) x y))
+(defun integrate-appell-f1-y (a b1 b2 c x y)
+  (div (mul (sub c 1) (ftake '%appell_f1 (sub a 1) b1 (sub b2 1) (sub c 1) x y))
        (mul (sub a 1) (sub b2 1))))
 
-(defprop %appell_1
+(defprop %appell_f1
   ((a b1 b2 c x y)
    nil
    nil
    nil
    nil
-   integrate-appell-1-x
-   integrate-appell-1-y)
+   integrate-appell-f1-x
+   integrate-appell-f1-y)
   integral)
