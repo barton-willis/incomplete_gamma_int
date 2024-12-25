@@ -1,7 +1,18 @@
+;; not done:
+;;   (a) conjugate function
+;;   (b) TeX support
+;;   (c) Power series  
+;;   (d) wxMaxima display code
+;;   (e) sign-function (unlikely anything useful)   
+;;   (f)  rbp & rbp ?
+;;   (g) limit code
+;;   (h) bigfloat numerical evaluation
+;;   (i) msimpind (Done)
+
 (in-package :maxima)
 
 (defmvar $use_appell_f1_integral_rep nil
-    "When 'true', the general simplifier returns and  integral representation of 'appell_f1"
+    "When 'true', the general simplifier returns an  integral representation of 'appell_f1"
     :properties ((assign #'(lambda (s a)
           (if (or (eq a nil) (eq a t))
               t
@@ -52,6 +63,8 @@
       (integral-rep-appell-f1 a b1 b2 c x y))
 
     (t (give-up))))
+
+(setf (get '%appell_f1 'msimpind) (list '%appell_f1 'simp))
 
 ;; Integral representation
 (defun integral-rep-appell-f1 (a b1 b2 c x y)
@@ -107,7 +120,6 @@
   integral)
 
 ;; Use quad_qaws for floating point evaluation.
-
 (defun appell-f1-float (a b1 b2 c x y)
   (let ((s (gensym)) (g))
     ;; Convert inputs to float
@@ -131,4 +143,3 @@
        (if (eql 0 (fifth g)) (div g (ftake '$beta a (- c a))) nil))
       (t nil))))
 
-             
