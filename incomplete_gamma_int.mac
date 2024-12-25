@@ -8,6 +8,7 @@
 load(ratpow);
 load(unwind_protect);
 load(quotify);
+load(appell);
 /* The function 'solve' evaluates its arguments. This code uses a workaround of this undocumented
    (miss) feature of 'solve' by quoting variables. The function 'quotify' substitutes a quoted mapatom for
    an unquoted mapatom. If this 'solve' feature is removed, the calls to `quotify` in this code
@@ -245,5 +246,5 @@ appell_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(), b : gensy
           if 1 + aa # 0 then (
              antid : αα * ff^(1+aa)*appell_f1(1+aa,-bb,-cc,aa+2,ff, ττ*ff)/(aa+1))
           elseif bb + aa # 0 then (
-             antid : αα * (ττ^cc*(-ff^(cc+bb))) * appell_f1(-bb-aa,-bb,-cc,1-bb-cc,1/ff, 1/(ττ*ff))/(bb+cc))))),
+             antid : αα * (ττ^cc*(-ff^(cc+bb)))*appell_f1(-bb-aa,-bb,-cc,1-bb-cc,1/ff, 1/(ττ*ff))/(bb+cc))))),
    antid);

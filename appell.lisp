@@ -38,7 +38,7 @@
           (appell-f1-float a b1 b2 c x y)))
       
     ((great x y)
-     (ftake '%appell_1 a b2 b1 c y x))
+     (ftake '%appell_f1 a b2 b1 c y x))
 
     ((alike1 y 1)
      (mul (ftake '%hypergeometric (ftake 'mlist a b2) (ftake 'mlist c) 1)
@@ -142,4 +142,3 @@
        (setq g (first g))
        (if (eql 0 (fifth g)) (div g (ftake '$beta a (- c a))) nil))
       (t nil))))
-
