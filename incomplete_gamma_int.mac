@@ -243,7 +243,7 @@ appell_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(), b : gensy
 
           [αα,aa,bb,cc, ττ, ff] : subst(sol, [α,a,b,c,τ,f]),
           if 1 + aa # 0 then (
-             antid : αα * ff^(1+aa)*appell_1(1+aa,-bb,-cc,aa+2,ff, ττ*ff)/(aa+1))
+             antid : αα * ff^(1+aa)*appell_f1(1+aa,-bb,-cc,aa+2,ff, ττ*ff)/(aa+1))
           elseif bb + aa # 0 then (
-             antid : αα * (ττ^cc*(-ff^(cc+bb))) * appell_1(-bb-aa,-bb,-cc,1-bb-cc,1/ff, 1/(ττ*ff))/(bb+cc))))),
+             antid : αα * (ττ^cc*(-ff^(cc+bb))) * appell_f1(-bb-aa,-bb,-cc,1-bb-cc,1/ff, 1/(ττ*ff))/(bb+cc))))),
    antid);
