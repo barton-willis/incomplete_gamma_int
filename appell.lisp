@@ -64,8 +64,7 @@
 
     (t (give-up))))
 
-(setf (get '%appell_f1 'msimpind) (list '%appell_f1 'simp))
-
+(defprop %appell_f1 (list '%appell_f1 'simp) 'msimpind)
 ;; Integral representation
 (defun integral-rep-appell-f1 (a b1 b2 c x y)
   (let ((z ($gensym)))
