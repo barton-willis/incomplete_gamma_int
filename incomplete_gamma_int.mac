@@ -18,7 +18,7 @@ load(appell);
 load(quotify);
 
 my_int(e,x) := block([antid : false, methods],
-  methods : ['power_int, 'incomplete_gamma_int, 'hypergeometric_int, 'appell_int],
+  methods : ['log_int, 'power_int, 'incomplete_gamma_int, 'hypergeometric_int, 'appell_int],
   for fn in methods while antid = false do (
     antid : fn(e,x)),
   antid);
@@ -72,6 +72,14 @@ digits(n,m,base) := block([d : []],
             n : first(n)),
        d);
 
+log_int(e,x) := block([α],
+  α : diff(ratdenom(e),x)/ratnumer(e),
+  α : block([rootsconmode : 'all], ratsimp(rootscontract(α))),
+  if freeof(x, α) and notequal(0, α) then (
+    log(ratdenom(e))/α)
+  else (
+   false));
+
 /* This function attempts to find a change of variable to convert the integrand
 'e' to the form integrate(x^a * exp(-x), x) = -gamma_incomplete(1+a,x). This
 method will be successful when the derivative change of variables is a product
@@ -101,9 +109,9 @@ incomplete_gamma_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(),
         if f # [] then (
           f : first(f),
           α : subst(sol, ratsimp(e / (diff(f,x) * f^a * exp(-f)))), 
-          α : block([rootsconmode : 'all], rootscontract(α)),
+          α : block([rootsconmode : 'all], ratsimp(rootscontract(α))),
           /* This should be improved to allow things like abs(x)/x to pass. */
-          if not freeof(α,x) then (
+          if not freeof(x,radcan(α)) then (
               print("unable to show that ",α," is piecewise constant")),
           antid : factor(-α * gamma_incomplete(subst(sol,a+1),f))))),
    antid);
@@ -151,9 +159,9 @@ hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(), b
         if f # [] then (
           f : first(f),
           α : subst(sol, ratsimp(e / (diff(f,x) * f^a * (1-f)^b))), 
-          α : block([rootsconmode : 'all], rootscontract(α)),
+          α : block([rootsconmode : 'all], ratsimp(rootscontract(α))),
           /* This should be improved to allow things like abs(x)/x to pass. */
-          if not freeof(α,x) then (
+          if not freeof(x,radcan(α)) then (
               print("unable to show that ",α," is piecewise constant")),
 
           [αα,aa,bb,ff] : subst(sol, [α,a,b,f]),
@@ -179,9 +187,9 @@ power_int(e,x) := block([α, sigma, mu, kerns, n, N, resfn, de, eqs, f, k : 1, a
         f : factor(exp(integrate(mu,x))),  
         if mu # 0 then (
            α : ratsimp(e / diff(f,x)), 
-           α : block([rootsconmode : 'all], rootscontract(α)),
+           α : block([rootsconmode : 'all], ratsimp(rootscontract(α))),
            /* This should be improved to allow things like abs(x)/x to pass. */
-           if not freeof(α,x) then (
+           if not freeof(x,radcan(α)) then (
               print("unable to show that ",α," is piecewise constant")),
            antid : factor(α * f)))),
          
@@ -237,9 +245,9 @@ appell_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(), b : gensy
           f : rhs(first(first(f))),
 
           α : subst(sol, ratsimp(e/(diff(f,x) * f^a * (1-f)^b * (1 - τ*f)^c))), 
-          α : block([rootsconmode : 'all], rootscontract(α)),
+          α : block([rootsconmode : 'all], ratsimp(rootscontract(α))),
           /* This should be improved to allow things like abs(x)/x to pass. */
-          if not freeof(α,x) then (
+          if not freeof(x,radcan(α)) then (
               print("unable to show that ",α," is piecewise constant")),
 
           [αα,aa,bb,cc, ττ, ff] : subst(sol, [α,a,b,c,τ,f]),

@@ -1,0 +1,22 @@
+
+/* Maxima error log from tests in C:/Users/barto/OneDrive/Documents/GitHub/incomplete_gamma_int/incomplete_gamma_int/rtest_incomplete_gamma_int.mac */
+
+/* Problem 35 (line 105) */
+my_int((sqrt(x)*(x^2-x+1)^(1/3)*(11*x^2-11))/((x^2+1)^(5/6)*(x^4+2*x^2+1)),x);
+/* Erroneous Result?:
+(6*hypergeometric([-(11/6),-(1/3)],[-(5/6)],(x^2+1)/x)*x^(11/6)
+  *(x^34+17*x^32+136*x^30+680*x^28+2380*x^26+6188*x^24+12376*x^22+19448*x^20
+        +24310*x^18+24310*x^16+19448*x^14+12376*x^12+6188*x^10+2380*x^8
+        +680*x^6+136*x^4+17*x^2+1)
+   ^(1/6))
+ /((x^2+1)^(23/6)*(x^10+5*x^8+10*x^6+10*x^4+5*x^2+1)^(1/6)) */ 
+/* Expected result: */
+(6*hypergeometric([-11/6,-1/3],[-5/6],(x^2+1)/x)*x^(11/6))/(x^2+1)^(11/6);
+
+/* Problem 36 (line 108) */
+my_int(4*(1-x^3)^(1/3),x);
+/* Erroneous Result?:
+error\-catch */ 
+/* Expected result: */
+x*hypergeometric([-1/3,1/3],[4/3],x^3);
+
