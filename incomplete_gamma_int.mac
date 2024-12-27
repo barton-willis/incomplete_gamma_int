@@ -179,8 +179,9 @@ hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(), b
           if not freeof(x,radcan(α)) then (
               print("unable to show that ",α," is piecewise constant")),
 
-          [αα,aa,bb] : map('sfactor, subst(sol, [α,a,b])),
-          ff : subst(sol, f),
+          [αα,aa,bb,ff] : map('sfactor, subst(sol, [α,a,b,f])),
+          ff : scanmap('sfactor,ff),
+          αα : scanmap('sfactor, αα),
           /* Maybe optionally apply hypergeometric_simp?*/  
           if integerp(aa) and ((1+aa = 0) or (2+aa <= 0)) then (
             antid : false)
