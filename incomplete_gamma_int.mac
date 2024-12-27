@@ -36,7 +36,22 @@ equation_reduce(eq,fcts) := block([inflag : true, cntx : supcontext()],
       xreduce("*",eq)),
   killcontext(cntx)));
 
- 
+/* Factor followed by simplification. Why? Because factor(-2) = -1 * 2 and that makes
+   integerp(factor(-2)) = false. */
+  sfactor(e) := expand(factor(e),0,0);
+
+/* Return true if the function x |--> e is piecewise constant. We'll assume that
+if g is piecewise constant, so is the composition f(g). This isn't true for all
+functions f, (say f is 1 on the rational numbers and 0 otherwise). */
+piecewise_constant_p(e,x,[z]) := (
+  if z = [] then (
+    e : infapply(e,lambda([s], convert_to_signum(radcan(s))))),
+  if mapatom(e) then freeof(x,e)
+  else (
+    numberp(e) or
+    member(safe_op(e), ['floor, 'signum]) or
+    every(lambda([s], piecewise_constant_p(s,x, false)), args(e))));
+
 /* Return solve(e,x) in an environment with programmode : true, and ... globalsolve : false. 
  
    We help 'solve' by immediately returning an empty list when the equation list contains a 
@@ -164,10 +179,13 @@ hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(), b
           if not freeof(x,radcan(α)) then (
               print("unable to show that ",α," is piecewise constant")),
 
-          [αα,aa,bb,ff] : subst(sol, [α,a,b,f]),
+          [αα,aa,bb] : map('sfactor, subst(sol, [α,a,b])),
+          ff : subst(sol, f),
           /* Maybe optionally apply hypergeometric_simp?*/  
-          if not (integerp(aa) and 1 + aa <= 0) then (
-             antid : factor(αα * f^(1+aa) * hypergeometric([1+aa, -bb], [2+aa], f)/(1+aa)))))),
+          if integerp(aa) and ((1+aa = 0) or (2+aa <= 0)) then (
+            antid : false)
+          else (
+            antid : factor(αα * ff^(1+aa) * hypergeometric([1+aa, -bb], [2+aa], ff)/(1+aa)))))),
    antid);
 
 /* seed integrate(α x^a,x) */
@@ -197,7 +215,7 @@ power_int(e,x) := block([α, sigma, mu, kerns, n, N, resfn, de, eqs, f, k : 1, a
 
 /* seed: integrate(α x^a (1-x)^b (1-τ x)^c,x) */
 appell_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(), b : gensym(),
-   de, eqs, sol, solx, α, f, k : 1, αα, aa, bb, ff, fff, antid : false, errormsg : false, bts, 
+   c : gensym(), de, eqs, sol, solx, α, f, k : 1, αα, aa, bb, ff, fff, antid : false, errormsg : false, bts, 
    fcts : [],P0,P1,P2,cc, τ,ττ],
 
    sigma : partfrac(gfactor(logdiff(e,x)),x),
