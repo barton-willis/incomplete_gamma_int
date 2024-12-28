@@ -18,7 +18,7 @@ load(appell);
 load(quotify);
 
 my_int(e,x) := block([antid : false, methods],
-  methods : ['log_int, 'power_int, 'incomplete_gamma_int, 'hypergeometric_int, 'appell_int],
+  methods : ['additive_int, 'log_int, 'power_int, 'incomplete_gamma_int, 'hypergeometric_int, 'appell_int],
   for fn in methods while antid = false do (
     antid : fn(e,x)),
   antid);
@@ -39,18 +39,6 @@ equation_reduce(eq,fcts) := block([inflag : true, cntx : supcontext()],
 /* Factor followed by simplification. Why? Because factor(-2) = -1 * 2 and that makes
    integerp(factor(-2)) = false. */
   sfactor(e) := expand(factor(e),0,0);
-
-/* Return true if the function x |--> e is piecewise constant. We'll assume that
-if g is piecewise constant, so is the composition f(g). This isn't true for all
-functions f, (say f is 1 on the rational numbers and 0 otherwise). */
-piecewise_constant_p(e,x,[z]) := (
-  if z = [] then (
-    e : infapply(e,lambda([s], convert_to_signum(radcan(s))))),
-  if mapatom(e) then freeof(x,e)
-  else (
-    numberp(e) or
-    member(safe_op(e), ['floor, 'signum]) or
-    every(lambda([s], piecewise_constant_p(s,x, false)), args(e))));
 
 /* Return solve(e,x) in an environment with programmode : true, and ... globalsolve : false. 
  
@@ -86,6 +74,19 @@ digits(n,m,base) := block([d : []],
             push(second(n),d),
             n : first(n)),
        d);
+
+additive_int(e,x) := block([inflag : true,ek, OK : true, I : 0],
+  if safe_op(e) = "+" then (
+    for ek in e while OK = true do (
+      ek : my_int(ek,x),
+      OK : is(ek # false),
+      I : ek + I),
+    if OK = false then false else I)
+  elseif freeof(x,e) then (
+    e*x)
+  else (
+    false));
+
 
 log_int(e,x) := block([α],
   α : diff(ratdenom(e),x)/ratnumer(e),
