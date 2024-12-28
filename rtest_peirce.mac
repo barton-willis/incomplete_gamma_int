@@ -3,6 +3,9 @@ Ginn and Company, 1910.
 
 I have translated the expected outputs to current standards */
 
+(load("incomplete_gamma_int"),0);
+0$
+
 my_int(a,x);
 a*x$
 
@@ -51,7 +54,10 @@ tan(x)$
 my_int(csc(x)^2,x);
 -cotan(x)$
 
-/*#26 */
+/* #26 */
+
+(assume(notequal(b,0),0),0);
+0$
 
 my_int(1/(a+b*x),x);
 log(a+b*x)/a$
@@ -61,5 +67,10 @@ my_int(1/(a+b*x)^2,x);
 
 my_int(1/(a+b*x)^3,x);
 -1/(2*b*(a+b*x)^2)$
+
+(forget(notequal(b,0)),0);
+0$
+
+
 
 

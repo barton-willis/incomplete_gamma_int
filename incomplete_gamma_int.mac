@@ -38,7 +38,7 @@ equation_reduce(eq,fcts) := block([inflag : true, cntx : supcontext()],
 
 /* Factor followed by simplification. Why? Because factor(-2) = -1 * 2 and that makes
    integerp(factor(-2)) = false. */
-  sfactor(e) := expand(factor(e),0,0);
+sfactor(e) := expand(factor(e),0,0);
 
 /* Return solve(e,x) in an environment with programmode : true, and ... globalsolve : false. 
  
@@ -87,7 +87,6 @@ additive_int(e,x) := block([inflag : true,ek, OK : true, I : 0],
   else (
     false));
 
-
 log_int(e,x) := block([α],
   α : diff(ratdenom(e),x)/ratnumer(e),
   α : block([rootsconmode : 'all], ratsimp(rootscontract(α))),
@@ -128,8 +127,9 @@ incomplete_gamma_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(),
           α : block([rootsconmode : 'all], ratsimp(rootscontract(α))),
           /* This should be improved to allow things like abs(x)/x to pass. */
           if not freeof(x,radcan(α)) then (
-              print("unable to show that ",α," is piecewise constant")),
-          antid : factor(-α * gamma_incomplete(subst(sol,a+1),f))))),
+              print("unable to show that ",α," is piecewise constant"))
+          else (
+            antid : factor(-α * gamma_incomplete(subst(sol,a+1),f)))))),
    antid);
 
 /* seed for integrate(α x^a * (1-x)^b,x) */
@@ -178,16 +178,16 @@ hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(), b
           α : block([rootsconmode : 'all], ratsimp(rootscontract(α))),
           /* This should be improved to allow things like abs(x)/x to pass. */
           if not freeof(x,radcan(α)) then (
-              print("unable to show that ",α," is piecewise constant")),
-
-          [αα,aa,bb,ff] : map('sfactor, subst(sol, [α,a,b,f])),
-          ff : scanmap('sfactor,ff),
-          αα : scanmap('sfactor, αα),
-          /* Maybe optionally apply hypergeometric_simp?*/  
-          if integerp(aa) and ((1+aa = 0) or (2+aa <= 0)) then (
-            antid : false)
+              print("unable to show that ",α," is piecewise constant"))
           else (
-            antid : factor(αα * ff^(1+aa) * hypergeometric([1+aa, -bb], [2+aa], ff)/(1+aa)))))),
+            [αα,aa,bb,ff] : map('sfactor, subst(sol, [α,a,b,f])),
+            ff : scanmap('sfactor,ff),
+            αα : scanmap('sfactor, αα),
+            /* Maybe optionally apply hypergeometric_simp?*/  
+            if integerp(aa) and ((1+aa = 0) or (2+aa <= 0)) then (
+              antid : false)
+            else (
+              antid : factor(αα * ff^(1+aa) * hypergeometric([1+aa, -bb], [2+aa], ff)/(1+aa))))))),
    antid);
 
 /* seed integrate(α x^a,x) */
@@ -210,9 +210,9 @@ power_int(e,x) := block([α, sigma, mu, kerns, n, N, resfn, de, eqs, f, k : 1, a
            α : block([rootsconmode : 'all], ratsimp(rootscontract(α))),
            /* This should be improved to allow things like abs(x)/x to pass. */
            if not freeof(x,radcan(α)) then (
-              print("unable to show that ",α," is piecewise constant")),
-           antid : factor(α * f)))),
-         
+              print("unable to show that ",α," is piecewise constant"))
+           else (
+             antid : factor(α * f))))),         
    antid);
 
 /* seed: integrate(α x^a (1-x)^b (1-τ x)^c,x) */
@@ -268,11 +268,11 @@ appell_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(), b : gensy
           α : block([rootsconmode : 'all], ratsimp(rootscontract(α))),
           /* This should be improved to allow things like abs(x)/x to pass. */
           if not freeof(x,radcan(α)) then (
-              print("unable to show that ",α," is piecewise constant")),
-
-          [αα,aa,bb,cc, ττ, ff] : subst(sol, [α,a,b,c,τ,f]),
-          if 1 + aa # 0 then (
-             antid : αα * ff^(1+aa)*appell_f1(1+aa,-bb,-cc,aa+2,ff, ττ*ff)/(aa+1))
-          elseif bb + aa # 0 then (
-             antid : αα * (ττ^cc*(-ff^(cc+bb)))*appell_f1(-bb-aa,-bb,-cc,1-bb-cc,1/ff, 1/(ττ*ff))/(bb+cc))))),
+              print("unable to show that ",α," is piecewise constant"))
+          else (
+            [αα,aa,bb,cc, ττ, ff] : subst(sol, [α,a,b,c,τ,f]),
+            if 1 + aa # 0 then (
+               antid : αα * ff^(1+aa)*appell_f1(1+aa,-bb,-cc,aa+2,ff, ττ*ff)/(aa+1))
+            elseif bb + aa # 0 then (
+               antid : αα * (ττ^cc*(-ff^(cc+bb)))*appell_f1(-bb-aa,-bb,-cc,1-bb-cc,1/ff, 1/(ττ*ff))/(bb+cc)))))),
    antid);
