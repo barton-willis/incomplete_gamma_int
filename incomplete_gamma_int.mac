@@ -90,10 +90,10 @@ digits(n,m,base) := block([d : []],
 log_int(e,x) := block([α],
   α : diff(ratdenom(e),x)/ratnumer(e),
   α : block([rootsconmode : 'all], ratsimp(rootscontract(α))),
-  if freeof(x, α) and notequal(0, α) then (
+  if freeof(x, α) and askequal(0, α) = 'no then (
     log(ratdenom(e))/α)
   else (
-   false));
+    false));
 
 /* This function attempts to find a change of variable to convert the integrand
 'e' to the form integrate(x^a * exp(-x), x) = -gamma_incomplete(1+a,x). This
