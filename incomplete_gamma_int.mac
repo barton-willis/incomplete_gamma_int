@@ -7,15 +7,7 @@
 
 load(ratpow);
 load(unwind_protect);
-load(quotify);
 load(appell);
-/* The function 'solve' evaluates its arguments. This code uses a workaround of this undocumented
-   (miss) feature of 'solve' by quoting variables. The function 'quotify' substitutes a quoted mapatom for
-   an unquoted mapatom. If this 'solve' feature is removed, the calls to `quotify` in this code
-   should be removed. Possibly another workaround is to use `algsys' not `solve.' Another workaround
-   is to give the gensym variables defined in complete_gamma_int (and friends) weird names like '?a' 
-   instead of 'a' */
-load(quotify);
 
 my_int(e,x) := block([antid : false, methods],
   methods : ['additive_int, 'log_int, 'power_int, 'incomplete_gamma_int, 'hypergeometric_int, 'appell_int],
@@ -40,13 +32,14 @@ equation_reduce(eq,fcts) := block([inflag : true, cntx : supcontext()],
    integerp(factor(-2)) = false. */
 sfactor(e) := expand(factor(e),0,0);
 
-/* Return solve(e,x) in an environment with programmode : true, and ... globalsolve : false. 
+/* Return solve(e,x) in an environment with programmode : true, ..., and globalsolve : false. 
  
    We help 'solve' by immediately returning an empty list when the equation list contains a 
    nonzero numeric member. This trap speeds up some integrals.*/
 solve_special_environment(e,x) := block([programmode : true, backsubst : true, realonly : false,
  breakup : false, solveexplicit : true, solvenullwarn : false, solvefactors : true, solveradcan : true,
- solvetrigwarn : false, solvedecomposes : true, globalsolve : false],
+ solvetrigwarn : false, solvedecomposes : true, globalsolve : false, algexact : true],
+
    if some(lambda([s], numberp(s) and s # 0),e) then (
      [])
    else (
@@ -56,7 +49,7 @@ solve_special_environment(e,x) := block([programmode : true, backsubst : true, r
 safe_op(e) := block([inflag : true], if mapatom(e) then false else op(e));
 
 /*Return the logarithmic derivative of the expression 'e' with respect to the variable 'x'.
-  Of course, 'x' should be a nonconstant mapatom, but this function doesn't check that for
+  Of course, 'x' should be a non constant mapatom, but this function doesn't check that for
   that. */
 logdiff(e,x) := diff(e,x)/e;
 
@@ -115,7 +108,6 @@ incomplete_gamma_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(),
            mu*diff(mu,x,2) + 2*diff(mu,x)^2,      
       eqs : ratp_dense_coeffs(de,x),
       eqs : map(lambda([s], equation_reduce(s,[notequal(a+1,0)])),eqs),
-      eqs : quotify(eqs,'a),
       sol : solve_special_environment(eqs,[a]),
       if sol # [] and sol # 'all then (     
         sol : first(sol),
@@ -159,7 +151,7 @@ hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(), b
 
       eqs : ratp_dense_coeffs(ratnumer(de),x),
       eqs : map(lambda([s], equation_reduce(s, fcts)), eqs),
-      eqs : quotify(eqs,'a, 'b),
+      /* eqs : quotify(eqs,'a, 'b), */
       sol : solve_special_environment(eqs,[a,b]),
 
       if sol # [] and sol # 'all then (   
@@ -249,8 +241,6 @@ appell_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(), b : gensy
       
       eqs : ratp_dense_coeffs(ratnumer(de),x),
       eqs : map(lambda([s], equation_reduce(s, fcts)), eqs),
-      eqs : quotify(eqs,'a, 'b, 'c, 'τ),
-
       sol : solve_special_environment(eqs,[a,b,c,τ]),
       if sol # [] and sol # 'all then (   
 
