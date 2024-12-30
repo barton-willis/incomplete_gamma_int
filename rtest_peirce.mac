@@ -59,6 +59,9 @@ my_int(csc(x)^2,x);
 (assume(notequal(b,0),0),0);
 0$
 
+(extra_simp : lambda([e], ratsimp(hypergeometric_simp(e))),0);
+0$
+
 my_int(1/(a+b*x),x);
 log(a+b*x)/a$
 
@@ -68,22 +71,22 @@ my_int(1/(a+b*x)^2,x);
 my_int(1/(a+b*x)^3,x);
 -1/(2*b*(a+b*x)^2)$
 
-ratsimp(hypergeometric_simp(my_int(x/(a+b*x),x)));
+my_int(x/(a+b*x),x);
 (b*x-a*log((b*x+a)/a))/b^2$
 
-ratsimp(hypergeometric_simp(my_int(x/(a+b*x)^2,x)));
+my_int(x/(a+b*x)^2,x);
 (a*log((b*x+a)/a)+b*x*(log((b*x+a)/a)-1))/(b^3*x+a*b^2)$
 
-ratsimp(hypergeometric_simp(my_int(x^2/(a+b*x),x)));
+my_int(x^2/(a+b*x),x);
 (2*a^2*log((b*x+a)/a)+b^2*x^2-2*a*b*x)/(2*b^3)$
 
-ratsimp(hypergeometric_simp(my_int(x^2/(a+b*x)^2,x)));
+my_int(x^2/(a+b*x)^2,x);
 (-(2*a^2*log((b*x+a)/a))+a*b*x*(2-2*log((b*x+a)/a))+b^2*x^2)/(b^4*x+a*b^3)$
 
-ratsimp(hypergeometric_simp(my_int(1/(x*(a+b*x)),x)));
+my_int(1/(x*(a+b*x)),x);
 log(x)/a-log(b*x+a)/a$
 
-ratsimp(hypergeometric_simp(my_int(1/(x*(a+b*x)^2),x)));
+my_int(1/(x*(a+b*x)^2),x);
 (a*(log((b*x)/(b*x+a))+1)+b*x*log((b*x)/(b*x+a)))/(a^2*b*x+a^3)$
 
 /* #36 */
