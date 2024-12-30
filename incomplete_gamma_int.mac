@@ -9,6 +9,8 @@ load(ratpow);
 load(unwind_protect);
 load(appell);
 
+/* Apply the function `extra_simp' to each antiderivative found by `my_int`.  The default is the 
+   identity function.*/
 extra_simp : lambda([e], e);
 
 my_int(e,x) := block([antid : false, methods],
