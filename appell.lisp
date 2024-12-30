@@ -133,12 +133,13 @@
     ;; Check conditions and compute
     (cond
       ((and (< x 1) (< y 1))
-       (setq g (errcatch
-                ($quad_qaws
+       (setq g ($quad_qaws
                  (div 1
                       (mul (ftake 'mexpt (sub 1 (mul x s)) b1)
                            (ftake 'mexpt (sub 1 (mul y s)) b2)))
-                 s 0 1 (- a 1) (- c (+ a 1)) 1)))
-       (setq g (first g))
-       (if (eql 0 (fifth g)) (div g (ftake '$beta a (- c a))) nil))
+                 s 0 1 (- a 1) (- c (+ a 1)) 1))
+        (setq g (cdr g))
+       (if (eql 0 (fourth g)) (div (first g) (ftake '%beta a (- c a))) nil))
       (t nil))))
+
+  
