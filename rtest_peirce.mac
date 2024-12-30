@@ -1,5 +1,5 @@
 /* From "A Short Table of Integrals," Second revised edition, by B. O. Peirce 
-Ginn and Company, 1910. 
+Ginn and Company, 1910. See, for example, https://babel.hathitrust.org/cgi/pt?id=wu.89089818371&seq=8
 
 I have translated the expected outputs to current standards */
 
@@ -68,9 +68,33 @@ my_int(1/(a+b*x)^2,x);
 my_int(1/(a+b*x)^3,x);
 -1/(2*b*(a+b*x)^2)$
 
+my_int(x/(a+b*x),x);
+(a+b*x -a * log(a+b*x))/b^2$
+
+my_int(x/(a+b*x)^2,x);
+(a+b*x + a/(a+b*x))/b^2$
+
+my_int(x^2/(a+b*x),x);
+(a^2*log(b*x+a))/b^3+(b*x^2-2*a*x)/(2*b^2)$
+
+my_int(x^2/(a+b*x)^2,x);
+-((2*a*log(b*x+a))/b^3)-a^2/(b^4*x+a*b^3)+x/b^2$
+
+my_int(1/(x*(a+b*x)),x);
+log(x)/a-log(b*x+a)/a$
+
+my_int(1/(x*(a+b*x)^2),x);
+-(log(b*x+a)/a^2)+log(x)/a^2+1/(a*b*x+a^2)$
+
+/* #36 */
 (forget(notequal(b,0)),0);
 0$
 
+contexts;
+[initial, global]$
 
+values;
+[]$
 
-
+facts();
+[]$
