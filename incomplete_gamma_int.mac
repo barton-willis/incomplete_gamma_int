@@ -17,7 +17,11 @@ my_int(e,x) := block([antid : false, methods],
   methods : ['additive_int, 'log_int, 'power_int, 'incomplete_gamma_int, 'hypergeometric_int, 'appell_int],
   for fn in methods while antid = false do (
     antid : fn(e,x)),
-  extra_simp(antid));
+  
+  if antid = false then (
+    funmake('integrate,[e]))
+  else (
+    extra_simp(antid)));
   
 /* Factor eq, replace factors of the form X^n by X and nonvanishing factors by 1. The second argument
    'fcts' should be a list of facts that can be assumed, for example notequal(p,0). This function
