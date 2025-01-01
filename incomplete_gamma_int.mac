@@ -36,6 +36,11 @@ equation_reduce(eq,fcts) := block([inflag : true, cntx : supcontext()],
    integerp(factor(-2)) = false. */
 sfactor(e) := expand(factor(e),0,0);
 
+/* Return true if the expression 'e' is piecewise constant. Let's try something really simple--return
+   true when diff(e,x) = 0. This catches some non constant but piecewise constant cases such as 
+   |x|/x, for example.*/
+pw_constant(e,x) := is(diff(e,x) = 0);
+
 /* Return solve(e,x) in an environment with programmode : true, ..., and globalsolve : false. 
  
    We help 'solve' by immediately returning an empty list when the equation list contains a 
@@ -122,7 +127,7 @@ incomplete_gamma_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(),
           α : subst(sol, ratsimp(e / (diff(f,x) * f^a * exp(-f)))), 
           α : block([rootsconmode : 'all], ratsimp(rootscontract(α))),
           /* This should be improved to allow things like abs(x)/x to pass. */
-          if not freeof(x,radcan(α)) then (
+          if not pw_constant(radcan(α),x) then (
               print("unable to show that ",α," is piecewise constant"))
           else (
             antid : factor(-α * gamma_incomplete(subst(sol,a+1),f)))))),
@@ -173,7 +178,7 @@ hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(), b
           α : subst(sol, ratsimp(e / (diff(f,x) * f^a * (1-f)^b))), 
           α : block([rootsconmode : 'all], ratsimp(rootscontract(α))),
           /* This should be improved to allow things like abs(x)/x to pass. */
-          if not freeof(x,radcan(α)) then (
+          if not pw_constant(radcan(α),x) then (
               print("unable to show that ",α," is piecewise constant"))
           else (
             [αα,aa,bb,ff] : map('sfactor, subst(sol, [α,a,b,f])),
@@ -205,7 +210,7 @@ power_int(e,x) := block([α, sigma, mu, kerns, n, N, resfn, de, eqs, f, k : 1, a
            α : ratsimp(e / diff(f,x)), 
            α : block([rootsconmode : 'all], ratsimp(rootscontract(α))),
            /* This should be improved to allow things like abs(x)/x to pass. */
-           if not freeof(x,radcan(α)) then (
+           if not pw_constant(radcan(α),x) then (
               print("unable to show that ",α," is piecewise constant"))
            else (
              antid : factor(α * f))))),         
@@ -261,7 +266,7 @@ appell_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(), b : gensy
           α : subst(sol, ratsimp(e/(diff(f,x) * f^a * (1-f)^b * (1 - τ*f)^c))), 
           α : block([rootsconmode : 'all], ratsimp(rootscontract(α))),
           /* This should be improved to allow things like abs(x)/x to pass. */
-          if not freeof(x,radcan(α)) then (
+          if not pw_constant(radcan(α),x) then (
               print("unable to show that ",α," is piecewise constant"))
           else (
             [αα,aa,bb,cc, ττ, ff] : subst(sol, [α,a,b,c,τ,f]),
