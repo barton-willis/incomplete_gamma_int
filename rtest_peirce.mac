@@ -97,7 +97,7 @@ contexts;
 [initial, global]$
 
 values;
-[]$
+[extra_simp]$
 
 facts();
 []$
