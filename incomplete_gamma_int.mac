@@ -19,7 +19,7 @@ my_int(e,x) := block([antid : false, methods],
     antid : fn(e,x)),
   
   if antid = false then (
-    funmake('integrate,[e]))
+    funmake('integrate,[e,x]))
   else (
     extra_simp(antid)));
   
@@ -43,7 +43,7 @@ sfactor(e) := expand(factor(e),0,0);
 /* Return true if the expression 'e' is piecewise constant. Let's try something really simple--return
    true when diff(e,x) = 0. This catches some non constant but piecewise constant cases such as 
    |x|/x, for example.*/
-pw_constant(e,x) := is(diff(e,x) = 0);
+pw_constant(e,x) := is(factor(diff(e,x)) = 0);
 
 /* Return solve(e,x) in an environment with programmode : true, ..., and globalsolve : false. 
  
