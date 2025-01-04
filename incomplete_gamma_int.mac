@@ -9,12 +9,14 @@ load(ratpow);
 load(unwind_protect);
 load(appell);
 
-/* Apply the function `extra_simp' to each antiderivative found by `my_int`.  The default is the 
-   identity function.*/
+/* Apply the function `extra_simp' to each antiderivative found by `my_int`. The default is the 
+   identity function. Alternatives to the identity function are `ratsimp`, `hypergeometric_simp`, 
+   and ...*/
 extra_simp : lambda([e], e);
 
 my_int(e,x) := block([antid : false, methods],
-  methods : ['additive_int, 'log_int, 'power_int, 'incomplete_gamma_int, 'hypergeometric_int, 'appell_int],
+  methods : ['additive_int, 'log_int, 'power_int, 'incomplete_gamma_int, 
+  incomplete_gamma_int_recp, 'hypergeometric_int, 'appell_int],
   for fn in methods while antid = false do (
     antid : fn(e,x)),
   
@@ -113,7 +115,6 @@ incomplete_gamma_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(),
    resfn : lambda([z,k], if k = 0 then 0 else (z - logdiff(1/ratdenom(z),x))/(a+1)),
    n : length(kerns),
    N : 2^n,
-
    while  k <= N and (antid = false) do (
       mu : xreduce("+", map(resfn, kerns, digits(k,n,2))),
       k : k + 1,
@@ -135,7 +136,14 @@ incomplete_gamma_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(),
               print("unable to show that ",α," is piecewise constant"))
           else (
             antid : factor(-α * gamma_incomplete(subst(sol,a+1),f)))))),
-   antid);
+        antid);
+
+incomplete_gamma_int_recp(e,x) := block([antid],
+  antid : incomplete_gamma_int(-subst(1/x,x,e)/x^2,x),
+  if antid = false then (
+    false)
+  else (
+    subst(1/x,x,antid)));
 
 /* seed for integrate(α x^a * (1-x)^b,x) */
 hypergeometric_int(e,x) := block([sigma, mu, kerns, n, N, resfn, a : gensym(), b : gensym(),

@@ -126,7 +126,11 @@ x^10/10+x^2/(2*%pi)$
 my_int(x^9 +x^2 + sqrt(x-6),x);
 x^10/10+x^3/3+(2*(x-6)^(3/2))/3$
 
-my_int(z^(v-1)*%e^(c+a*z^2),z);
+block([I],
+  assume(a < 0),
+  I : my_int(z^(v-1)*%e^(c+a*z^2),z),
+  forget(a < 0),
+  I);
 -((%e^c*gamma_incomplete(v/2,-(a*z^2))*z^v)/(2*(-a)^(v/2)*abs(z)^v))$
 
 /* did we make a mess? */
