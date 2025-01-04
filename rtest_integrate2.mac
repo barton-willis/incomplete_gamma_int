@@ -20,7 +20,7 @@
            YYY$
      (h) remove unneeded assumptions
 
-  As of 4 January 2025, this test runs OK with 106/758 tests passed. That seems terrible, but
+  As of 4 January 2025, this test runs OK with 113/758 tests passed. That seems terrible, but
   there are tests in this file that are beyond the objectives of `my_int`.  */
 
 (kill(all),
@@ -212,141 +212,97 @@ my_int(z^(v-1)*a^(b*z+d),z);
 -a^d*gamma_incomplete(v,-log(a)*b*z)*z^v/(-log(a)*b*z)^v$
 
 /* Problem 70: NEW 2 */
-my_int(a^(b*z+d)/z,z),gamma_expand:true,logcontract;
+my_int(a^(b*z+d)/z,z);
 a^d*expintegral_ei(b*z*log(a));
 
 /* ----- Involving z^(v-1), arguments b*z+d and base %e --------------------- */
-
-/* Problem 71: NEW 2 */
 diffcheck(my_int(z^(v-1)*%e^(a*z+b),z),z,factor);
 z^(v-1)*%e^(a*z+b);
 
-/* Problem 72: NEW 2 */
-my_int(z^n*%e^(a*z+b),z),factor;
-a^(-n-1)*%e^b*(-1)^n*gamma_incomplete(n+1,-a*z);
+my_int(z^n*%e^(a*z+b),z);
+ (%e^b*gamma_incomplete(n+1,-(a*z))*z^n)/(a*(-(a*z))^n)$
 
-/* Problem 73: OK */
-my_int(z*%e^(a*z+b),z),factor;
-(a*z-1)*%e^(a*z+b)/a^2;
+my_int(z*%e^(a*z+b),z);
+-((gamma_incomplete(2,-(a*z))*%e^b)/a^2)$
 
-/* Problem 74: NEW 2 */
 my_int(%e^(a*z+b)/z,z),gamma_expand:true,logcontract;
 %e^b*expintegral_ei(a*z);
 
-/* Problem 76: OK */
-assume(a>0);
-[a>0];
 my_int(%e^(a*z+b)/sqrt(z),z),erf_representation:erfi;
--sqrt(%pi)*%i*%e^b*erfi(%i*sqrt(-a)*sqrt(z))/sqrt(-a)$
-forget(a>0);
-[a>0];
+(gamma_incomplete(1/2,-(a*z))*sqrt(-a)*%e^b)/a$
 
 /* ----- Involving z^(v-1), arguments b*z^r and base a ---------------------- */
-
-/* Problem 77: NEW 2 */
 my_int(z^(v-1)*a^(b*z^r),z);
 -gamma_incomplete(v/r,-log(a)*b*z^r)*z^v/(r*(-log(a)*b*z^r)^(v/r))$
 
-/* Problem 79: NEW 2 */
 my_int(a^(b*z^r)/z,z),gamma_expand:true,logcontract;
 expintegral_ei(log(a)*b*z^r)/r;
 
 /* ----- Involving z^(v-1), arguments a*z^r and base %e --------------------- */
-
-/* Problem 80: NEW 2 */
 my_int(z^(v-1)*%e^(a*z^r),z);
 -gamma_incomplete(v/r,-a*z^r)*z^v/(r*(-a*z^r)^(v/r))$
 
-/* Problem 81: NEW 2 */
 my_int(%e^(a*z^r)/z,z),gamma_expand:true,logcontract;
 expintegral_ei(a*z^r)/r;
 
-/* Problem 82: NEW 2 */
 my_int(z^(2*n)*%e^(a*z^2),z),factor;
--(-1)^n*gamma_incomplete((2*n+1)/2,-a*z^2)*z/(2*a^n*sqrt(-a*z^2))$
+(gamma_incomplete((2*n+1)/2,-(a*z^2))*z^(2*n-1)*(-(a*z^2))^(1/2-n))/(2*a)$
 
-/* Problem 83: NEW 2 */
 my_int(z^(2*n-1)*%e^(a*z^2),z),factor;
--(-1)^n*gamma_incomplete(n,-a*z^2)/(2*a^n);
+-((gamma_incomplete(n,-(a*z^2))*z^(2*n))/(2*(-(a*z^2))^n))$
 
-/* Problem 84: OK */
 my_int(z*%e^(a*z^2),z);
 %e^(a*z^2)/(2*a);
 
-/* Problem 86: OK */
-assume(a>0);
-[a>0];
-my_int(z^2*%e^(a*z^2),z),erf_representation:erfi;
-sqrt(%pi)*%i*erfi(%i*sqrt(-a)*z)/(4*sqrt(-a)*a)+z*%e^(a*z^2)/(2*a)$
-forget(a>0);
-[a>0];
+my_int(z^2*%e^(a*z^2),z);
+(gamma_incomplete(3/2,-(a*z^2))*sqrt(-(1/(a*z^2)))*z)/(2*a)$
 
-/* Problem 88: OK */
 my_int(z^3*%e^(a*z^2),z);
-(a*z^2-1)*%e^(a*z^2)/(2*a^2);
+-(gamma_incomplete(2,-(a*z^2))/(2*a^2))$
 
-/* Problem 90: OK */
-assume(a>0);
-[a>0];
 my_int(z^4*%e^(a*z^2),z),erf_representation:erfi;
-(2*a*z^3-3*z)*%e^(a*z^2)/(4*a^2)-3*sqrt(%pi)*%i*erfi(%i*sqrt(-a)*z)
-                                 /(8*sqrt(-a)*a^2)$
-forget(a>0);
-[a>0];
+(gamma_incomplete(5/2,-(a*z^2))*sqrt(-(1/(a^3*z^6)))*z^3)/(2*a)$
 
-/* Problem 92: OK */
 my_int(z^5*%e^(a*z^2),z);
-(a^2*z^4-2*a*z^2+2)*%e^(a*z^2)/(2*a^3);
+gamma_incomplete(3,-(a*z^2))/(2*a^3)$
 
-/* Problem 93: NEW 2 */
-my_int(%e^(a*z^2)/z,z),gamma_expand:true,logcontract;
+my_int(%e^(a*z^2)/z,z);
 expintegral_ei(a*z^2)/2;
 
-/* Problem 94: NEW 2 */
-multthru(my_int(%e^(a*z^2)/z^2,z)), gamma_expand:true;
-sqrt(%pi)*sqrt(-a*z^2)*erfc(sqrt(-a*z^2))/z-%e^(a*z^2)/z;
+my_int(%e^(a*z^2)/z^2,z);
+(gamma_incomplete(-(1/2),-(a*z^2))*sqrt(-a^3)*abs(z))/(2*a*z)$
 
-/* Problem 95: NEW 2 */
-my_int(%e^(a*z^2)/z^3,z),gamma_expand:true,logcontract,ratsimp;
-(a*z^2*expintegral_ei(a*z^2)-%e^(a*z^2))/(2*z^2);
+my_int(%e^(a*z^2)/z^3,z);
+(gamma_incomplete(-1,-(a*z^2))*a)/2$
 
-/* Problem 96: NEW 2 */
-my_int(%e^(a*z^2)/z^4,z), gamma_expand:true,ratsimp;
-(2*sqrt(%pi)*a^2*z^4*erfc(sqrt(-a*z^2))+sqrt(-a*z^2)*(2*a*z^2+1)*%e^(a*z^2))
- /(3*z^3*sqrt(-a*z^2))/-1;
+my_int(%e^(a*z^2)/z^4,z)$
+(gamma_incomplete(-(3/2),-(a*z^2))*sqrt(-a^5)*abs(z))/(2*a*z)$
 
-/* Problem 97: NEW 2 */
 my_int(%e^(a*z^2)/z^5,z),gamma_expand:true,logcontract;
-(2*a^2*z^4*expintegral_ei(a*z^2)+(-2*a*z^2-2)*%e^(a*z^2))/(8*z^4);
+-((gamma_incomplete(-2,-(a*z^2))*a^2)/2)$
 
-/* Problem 98: NEW 2 */
 my_int(z^n*%e^(a*sqrt(z)),z);
 -2*gamma_incomplete(2*(n+1),-a*sqrt(z))/a^(2*(n+1));
 
-/* Problem 99: OK */
 my_int(z*%e^(a*sqrt(z)),z);
 2*(a^3*z^(3/2)-3*a^2*z+6*a*sqrt(z)-6)*%e^(a*sqrt(z))/a^4;
 
-/* Problem 100: OK */
 my_int(z^2*%e^(a*sqrt(z)),z);
 2*(a^5*z^(5/2)-5*a^4*z^2+20*a^3*z^(3/2)-60*a^2*z+120*a*sqrt(z)-120)
         *%e^(a*sqrt(z))
         /a^6;
 
-/* Problem 101: OK */
 my_int(z^3*%e^(a*sqrt(z)),z);
 2*(a^7*z^(7/2)-7*a^6*z^3+42*a^5*z^(5/2)-210*a^4*z^2+840*a^3*z^(3/2)
                      -2520*a^2*z+5040*a*sqrt(z)-5040)*%e^(a*sqrt(z))
         /a^8;
 
-/* Problem 102: OK */
 my_int(z^4*%e^(a*sqrt(z)),z);
 2*(a^9*z^(9/2)-9*a^8*z^4+72*a^7*z^(7/2)-504*a^6*z^3+3024*a^5*z^(5/2)
                      -15120*a^4*z^2+60480*a^3*z^(3/2)-181440*a^2*z
                      +362880*a*sqrt(z)-362880)*%e^(a*sqrt(z))
         /a^10;
 
-/* Problem 103: OK */
 my_int(z^5*%e^(a*sqrt(z)),z);
 2*(a^11*z^(11/2)-11*a^10*z^5+110*a^9*z^(9/2)-990*a^8*z^4
                        +7920*a^7*z^(7/2)-55440*a^6*z^3+332640*a^5*z^(5/2)
@@ -354,30 +310,25 @@ my_int(z^5*%e^(a*sqrt(z)),z);
                        +39916800*a*sqrt(z)-39916800)*%e^(a*sqrt(z))
         /a^12;
 
-/* Problem 104: NEW 2 */
-my_int(%e^(a*sqrt(z))/z,z),gamma_expand:true,logcontract;
+my_int(%e^(a*sqrt(z))/z,z);
 2*expintegral_ei(a*sqrt(z));
 
-/* Problem 105: NEW 2 */
-my_int(%e^(a*sqrt(z))/z^2,z),gamma_expand:true,logcontract;
+my_int(%e^(a*sqrt(z))/z^2,z);
 ((2*a*z+2*sqrt(z))*%e^(a*sqrt(z))-2*a^2*expintegral_ei(a*sqrt(z))*z^(3/2))
  /-(2*z^(3/2));
 
-/* Problem 106: NEW 2 */
-my_int(%e^(a*sqrt(z))/z^3,z),gamma_expand:true,logcontract;
+my_int(%e^(a*sqrt(z))/z^3,z);
 ((2*a^3*z^3+2*a^2*z^(5/2)+4*a*z^2+12*z^(3/2))*%e^(a*sqrt(z))
  -2*a^4*expintegral_ei(a*sqrt(z))*z^(7/2))
  /-(24*z^(7/2));
 
-/* Problem 107: NEW 2 */
-my_int(%e^(a*sqrt(z))/z^4,z),gamma_expand:true,logcontract;
+my_int(%e^(a*sqrt(z))/z^4,z);
 ((2*a^5*z^5+2*a^4*z^(9/2)+4*a^3*z^4+12*a^2*z^(7/2)+48*a*z^3+240*z^(5/2))
  *%e^(a*sqrt(z))
  -2*a^6*expintegral_ei(a*sqrt(z))*z^(11/2))
  /-(720*z^(11/2));
 
-/* Problem 108: NEW 2 */
-my_int(%e^(a*sqrt(z))/z^5,z),gamma_expand:true,logcontract;
+my_int(%e^(a*sqrt(z))/z^5,z);
 ((2*a^7*z^7+2*a^6*z^(13/2)+4*a^5*z^6+12*a^4*z^(11/2)+48*a^3*z^5
             +240*a^2*z^(9/2)+1440*a*z^4+10080*z^(7/2))
  *%e^(a*sqrt(z))
@@ -385,64 +336,43 @@ my_int(%e^(a*sqrt(z))/z^5,z),gamma_expand:true,logcontract;
  /-(40320*z^(15/2));
 
 /* ----- Involving z^(v-1), arguments b*z^r and base a ---------------------- */
-
-/* Problem 109: NEW 2 */
 diffcheck(my_int(z^(v-1)*a^(d+b*z^r),z),z,radcan);
 z^(v-1)*a^(d+b*z^r);
 
-/* Problem 110: NEW 2 */
 my_int(a^(d+b*z^r)/z,z),gamma_expand:true,logcontract;
 a^d*expintegral_ei(log(a)*b*z^r)/r;
 
 /* ----- Involving z^(v-1), arguments b*z^r and base %e --------------------- */
-
-/* Problem 111: NEW 2 */
 diffcheck(my_int(z^(v-1)*%e^(b+a*z^r),z),z,factor);
 z^(v-1)*%e^(b+a*z^r);
 
-/* Problem 112: NEW 2 */
-my_int(%e^(b+a*z^r)/z,z),gamma_expand:true,logcontract;
+my_int(%e^(b+a*z^r)/z,z);
 %e^b*expintegral_ei(a*z^r)/r;
 
 /* ----- Involving (a*z+b)^-n ----------------------------------------------- */
-
-/* Problem 113: NEW 3 */
 my_int(%e^(c*z)/(b+a*z),z),expintexpand:true,logcontract;
 %e^-(b*c/a)*expintegral_ei((a*c*z+b*c)/a)/a;
 
-/* Problem 114: NEW 3 */
 my_int(%e^(c*z)/(b+a*z)^2,z);
--expintegral_e(2,-c*(a*z+b)/a)*%e^-(b*c/a)/(a*(a*z+b));
+(gamma_incomplete(-1,-((c*(a*z+b))/a))*c*%e^-((b*c)/a))/a^2$
 
-/* Problem 115: NEW 3 */
 my_int(%e^(c*z)/(b+a*z)^3,z);
--expintegral_e(3,-c*(a*z+b)/a)*%e^-(b*c/a)/(a*(a*z+b)^2);
+-((gamma_incomplete(-2,-((c*(a*z+b))/a))*c^2*%e^-((b*c)/a))/a^3)$
 
-/* Problem 116: NEW 3 */
 my_int(%e^(c*z)/(b+a*z)^4,z);
--expintegral_e(4,-c*(a*z+b)/a)*%e^-(b*c/a)/(a*(a*z+b)^3);
+(gamma_incomplete(-3,-((c*(a*z+b))/a))*c^3*%e^-((b*c)/a))/a^4$
 
-/* Problem 117: NEW 3 */
 my_int(%e^(c*z)/(b+a*z)^5,z);
--expintegral_e(5,-c*(a*z+b)/a)*%e^-(b*c/a)/(a*(a*z+b)^4);
+-((gamma_incomplete(-4,-((c*(a*z+b))/a))*c^4*%e^-((b*c)/a))/a^5)$
 
-/* Problem 118: NEW 3 */
 my_int(%e^(c*z)/(b+a*z)^6,z);
--expintegral_e(6,-c*(a*z+b)/a)*%e^-(b*c/a)/(a*(a*z+b)^5);
+(gamma_incomplete(-5,-((c*(a*z+b))/a))*c^5*%e^-((b*c)/a))/a^6$
 
-/* Problem 119: NOUN 
- * This integral and the integrals 120, 121, 122, 123, 124 return an
- * unevaluated integral. This is caused by rischint. Some of the integrals
- * can be my_intd in a second step. The algorithm can be improved.
- */
 my_int(z*%e^(c*z)/(b+a*z),z);
 z*%e^(c*z)/(a*c*z+b*c)-b*'my_int(%e^(c*z)/(a^2*c*z^2+2*a*b*c*z+b^2*c),z);
 
-/* Problem 120: NOUN */
 my_int(z^2*%e^(c*z)/(b+a*z),z);
-(c*z^2-z)*%e^(c*z)/(a*c^2*z+b*c^2)-'my_int(
-                                   (b*c*z-b)*%e^(c*z)
-                                    /(a^2*c^2*z^2+2*a*b*c^2*z+b^2*c^2),z);
+exp(c*x)/(a*c) - (b*exp(-b*c/a) * expintegral_ei(b*c/a + c*z))/a^2$
 
 /* Problem 121: NOUN */
 /*  DOES NOT FINISH 
@@ -515,14 +445,13 @@ my_int(z*%e^(d*z)/(c+b*z+a*z^2)^2,z);
  */
 
 /* ----- Involving (a*z*b)^w and base %e ------------------------------------ */
-
-/* Problem 133: NEW 3 */
 my_int((a*z+b)^w*%e^(c*z+d),z);
--%e^(d-b*c/a)*expintegral_e(-w,-c*(a*z+b)/a)*(a*z+b)^(w+1)/a;
+(%e^(d-(b*c)/a)*gamma_incomplete(w+1,-((c*(a*z+b))/a))*(a*z+b)^w)
+ /(c*(-((c*(a*z+b))/a))^w)$
 
-/* Problem 134: NEW 3 */
 my_int((a*z+b)^w*%e^(c*z),z);
--%e^-(b*c/a)*expintegral_e(-w,-c*(a*z+b)/a)*(a*z+b)^(w+1)/a;
+(%e^-((b*c)/a)*gamma_incomplete(w+1,-((c*(a*z+b))/a))*(a*z+b)^w)
+ /(c*(-((c*(a*z+b))/a))^w)$
 
 /* Problem 135: OK */
 multthru(my_int((a*z+b)^(3/2)*%e^(c*z),z));
