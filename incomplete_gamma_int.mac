@@ -14,7 +14,7 @@ load(appell);
    and ...*/
 extra_simp : lambda([e], e);
 
-my_int(e,x) := block([antid : false, methods],
+my_int(e,x) := block([antid : false, methods, ratsimpexpons : true],
   methods : ['additive_int, 'log_int, 'power_int, 'incomplete_gamma_int, 
   incomplete_gamma_int_recp, 'hypergeometric_int, 'appell_int],
   for fn in methods while antid = false do (

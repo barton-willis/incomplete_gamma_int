@@ -1,4 +1,4 @@
-(load("incomplete_gamma_int"),0);
+(load("incomplete_gamma_int"),reset(domain), 0);
 0$
 
 my_int(sqrt(x)*%e^(-x),x);
