@@ -20,7 +20,7 @@
            YYY$
      (h) remove unneeded assumptions
 
-  As of 4 January 2025, this test runs OK with 113/758 tests passed. That seems terrible, but
+  As of 7 January 2025, this test runs OK with 123/758 tests passed. That seems terrible, but
   there are tests in this file that are beyond the objectives of `my_int`.  */
 
 (kill(all),
@@ -68,10 +68,10 @@ my_int(a^(b*z^r),z);
 z*gamma_incomplete(1/r,-b*z^r*log(a))*(-b*z^r*log(a))^(-1/r)/-r;
 
 my_int(a^(b*z^2),z);
-(gamma_incomplete(1/2,-(log(a)*b*z^2))*a^(b*z^2)*sqrt(-(log(a)*b))*%e^-(log(a)*b*z^2)*abs(z))
-  /(2*log(a)*b*z)$
+(gamma_incomplete(1/2,-(log(a)*b*z^2))*a^(b*z^2)*sqrt(-(log(a)*b*z^2))*%e^-(log(a)*b*z^2))$
 
-my_int(a^(b*sqrt(z)),z),radcan,factor;
+
+my_int(a^(b*sqrt(z)),z);
 2*(log(a)*b*sqrt(z)-1)*a^(b*sqrt(z))/(log(a)^2*b^2);
 
 my_int(a^(b*(z^r)^p),z);
@@ -88,8 +88,9 @@ a^(b*z)/(log(a)*b)$
 my_int(%e^(a*z^r),z);
 -z*gamma_incomplete(1/r,-a*z^r)/(r*(-a*z^r)^(1/r));
 
-my_int(%e^(a*z^2),z),erf_representation:erfi;
-(gamma_incomplete(1/2,-(a*z^2))*sqrt(-a)*abs(z))/(2*a*z)$
+my_int(%e^(a*z^2),z);
+(gamma_incomplete(1/2,-(a*z^2))*sqrt(-(a*z^2)))/(2*a*z)$ 
+
 
 my_int(%e^(a*sqrt(z)),z);
 2*(a*sqrt(z)-1)*%e^(a*sqrt(z))/a^2;
@@ -130,19 +131,19 @@ my_int(%e^(a*z)/z^n,z),factor;
 a^(n-1)*(-1)^n*gamma_incomplete(1-n,-a*z);
 
 my_int(z*%e^(a*z),z);
-(a*z-1)*%e^(a*z)/a^2;
+-(gamma_incomplete(2,-(a*z))/a^2)$
 
 my_int(sqrt(z^2)*%e^(a*z),z);
-(a*z-1)*%e^(a*z)/a^2$
+-((gamma_incomplete(2,-(a*z))*sqrt(z^2))/(a^2*z))$
 
 my_int(z^2*%e^(a*z),z);
--(gamma_incomplete(3,-(a*z))/a^3)$
+gamma_incomplete(3,-(a*z))/a^3$
 
 my_int(z^3*%e^(a*z),z);
 -(gamma_incomplete(4,-(a*z))/a^4)$
 
 my_int(z^4*%e^(a*z),z);
--(gamma_incomplete(5,-(a*z))/a^5)$
+(gamma_incomplete(5,-(a*z))/a^5)$
 
 my_int(z^5*%e^(a*z),z);
 -(gamma_incomplete(6,-(a*z))/a^6)$
@@ -172,7 +173,7 @@ my_int(%e^(a*z)/z^5,z);
  -(gamma_incomplete(-4,-(a*z))*a^4)$
 
 my_int(z^(1/2+n)*%e^(a*z),z);
-(gamma_incomplete((2*n+3)/2,-(a*z))*z^(n+1/2)*(-(a*z))^(-n-1/2))/a$
+(a^(-n-1)*(-1)^n*gamma_incomplete((2*n+3)/2,-(a*z))*sqrt(z))/sqrt(-(a*z))$
 
 my_int(sqrt(z)*%e^(a*z),z);
  (gamma_incomplete(3/2,-(a*z))*sqrt(-(1/a)))/a$
@@ -209,7 +210,7 @@ my_int(%e^(a*z)/z^(9/2),z);
 
 /* ----- Involving z^(v-1), arguments b*z+d and base a ---------------------- */
 my_int(z^(v-1)*a^(b*z+d),z);
--a^d*gamma_incomplete(v,-log(a)*b*z)*z^v/(-log(a)*b*z)^v$
+-((a^(b*z+d)*gamma_incomplete(v,-(log(a)*b*z))*z^v*%e^-(log(a)*b*z))/(-(log(a)*b*z))^v)$
 
 /* Problem 70: NEW 2 */
 my_int(a^(b*z+d)/z,z);
@@ -245,14 +246,14 @@ my_int(z^(v-1)*%e^(a*z^r),z);
 my_int(%e^(a*z^r)/z,z),gamma_expand:true,logcontract;
 expintegral_ei(a*z^r)/r;
 
-my_int(z^(2*n)*%e^(a*z^2),z),factor;
-(gamma_incomplete((2*n+1)/2,-(a*z^2))*z^(2*n-1)*(-(a*z^2))^(1/2-n))/(2*a)$
+my_int(z^(2*n)*%e^(a*z^2),z);
+(a^(-n-1)*(-1)^n*gamma_incomplete((2*n+1)/2,-(a*z^2))*sqrt(-(a*z^2)))/(2*z)$
 
 my_int(z^(2*n-1)*%e^(a*z^2),z),factor;
 -((gamma_incomplete(n,-(a*z^2))*z^(2*n))/(2*(-(a*z^2))^n))$
 
 my_int(z*%e^(a*z^2),z);
-%e^(a*z^2)/(2*a);
+gamma_incomplete(1,-(a*z^2))/(2*a)$
 
 my_int(z^2*%e^(a*z^2),z);
 (gamma_incomplete(3/2,-(a*z^2))*sqrt(-(1/(a*z^2)))*z)/(2*a)$
@@ -1494,18 +1495,16 @@ gamma_incomplete(1,
 0$
 
 my_int(a^(d*z)*b^(e*z)*c^(f*z),z);
-(a^(d*z))^(log(c)*f/(log(a)*d)+log(b)*e/(log(a)*d)+1)/(log(a)*d*(log(c)*f/(log(a)*d)+log(b)*e/(log(a)*d)+1))$
+(gamma_incomplete(1,-((log(c)*f+log(b)*e+log(a)*d)*z))
+ *a^(d*z)*b^(e*z)*c^(f*z)*%e^((-(log(c)*f)-log(b)*e-log(a)*d)*z))
+ /(log(c)*f+log(b)*e+log(a)*d)$
 
 (forget(notequal(log(c)*f/(log(a)*d)+log(b)*e/(log(a)*d),-1)),0);
 0$
 
 /* ----- %e^(c*z)*(%e^(a*z))^v ---------------------------------------------- */
-
-/* Problem 311: (OK) wrong simplification for complex integration variable
- * Change example to a real variable x. 
- */
 my_int(%e^(c*x)*(%e^(a*x))^v,x);
-%e^(a*v*x+c*x)/(a*v+c)$
+gamma_incomplete(1,-((a*v+c)*x))/(a*v+c)$
 
 /* ----- %e^(c*z+d)*(%e^(a*z))^v -------------------------------------------- */
 
