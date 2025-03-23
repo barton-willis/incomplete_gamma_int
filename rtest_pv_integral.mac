@@ -1,0 +1,21 @@
+ integrate(sin(x)^2/x,x,minf,inf);
+ 0$
+ 
+ block([gamma_expand : true,expintrep : expintegral_trig], integrate(sin(x)^2/x,x,minf,inf));
+ 0$
+
+ block([gamma_expand : false], integrate(sin(x)^2/x,x,minf,inf));
+ 0$
+
+ integrate(sin(x)^2/x^2,x,minf,inf);
+ %pi$
+ 
+ block([gamma_expand : true,expintrep : expintegral_trig], integrate(sin(x)^2/x^2,x,minf,inf));
+ %pi$
+
+ block([gamma_expand : false], integrate(sin(x)^2/x^2,x,minf,inf));
+ %pi$
+
+ 
+
+ 
