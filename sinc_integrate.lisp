@@ -1,3 +1,9 @@
+#| Author: Barton Willis
+   March 2025
+
+Maxima code for integration of expressions of the form cnst sin\cos(xi)^m / q^n with respect to x, where
+xi and q are affine functions of x, m and n are positive integers, and cnst is free of x. |#
+
 (in-package :maxima)
 
 ;; Only for testing--not intended to be a user level function
@@ -50,6 +56,7 @@
                         (mapcar #'(lambda (s) (sinc-cosc-integrate s x))
                                 (cdr ee)))))
 
+     ;; Downward recursion of exponent of denominator
      ((> n 1)
       (mul cnst
            (sub (div (ftake '%sin xi)
@@ -111,7 +118,8 @@
       (fapply 'mplus
               (mapcar #'(lambda (s) (sinc-cosc-integrate s x))
                       (cdr ee))))
-     ((> n 1) ; Recursive case
+     ;; Downward recursion on the exponent of the denominator
+     ((> n 1) 
       (mul cnst
            (add (div (ftake '%cos xi)
                      (mul d (sub 1 n) (ftake 'mexpt q (sub n 1))))
