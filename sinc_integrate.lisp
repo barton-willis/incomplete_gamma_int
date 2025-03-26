@@ -42,10 +42,8 @@ fresnel_si and fresnel_ci functions.
  return nil"
   (let ((match nil) (a nil) (b nil) (c nil) (d nil) (disc nil) (ee))
     ;; Match and extract parameters
-    (multiple-value-bind (cnst xi m q n) (match-sinc e x)
+    (multiple-value-bind (cnst xi m q n) (match-sinc-cosc e '%sin x)
 
-      (mtell "e = ~M ; cnst = ~M ; xi = ~M ; m = ~M q = ~M ; n = ~M ~%"
-         e cnst xi m q n)
     (setq n (neg n))
     ;; Check if both xi and q are linear
     (setq match (if cnst (m2-linear xi x) nil))
@@ -103,7 +101,7 @@ fresnel_si and fresnel_ci functions.
  return nil"
   (let ((match nil) (a nil) (b nil) (c nil) (d nil) (disc nil) (ee))
     ;; Match and extract parameters
-    (multiple-value-bind (cnst xi m q n) (match-cosc e x)
+    (multiple-value-bind (cnst xi m q n) (match-sinc-cosc e '%cos x)
       (setq n (neg n))
     ;; Extract parameters if match is found
     (when match
@@ -164,89 +162,6 @@ fresnel_si and fresnel_ci functions.
                        (ftake '%expintegral_si
                               (add (div (mul b c) d)
                                    (mul b x)))))))))))))
- 
-(defun sine-p (e)
-  (and (consp e) (eq '%sin (caar e))))
-
-(defun cosine-p (e)
-  (and (consp e) (eq '%cos (caar e))))
-
-(defun match-sinc (e x)
-  "Match `e` to `cnst * sin(xi)^m / q^n`, where `cnst` is free of `x`, 
-   both `xi` and `q` depend on `x`, and `m` and `n` are integers."
-  (let ((cnst nil) (xi nil) (m 0) (q nil) (n 0))
-    (catch 'done
-      (cond
-        ((mtimesp e)
-         (setq e (cdr e))
-         (dolist (ek e)
-           (cond
-             ((freeof x ek) (push ek cnst))
-             (($mapatom ek) (throw 'done nil))
-             ((sine-p ek)
-              (if xi
-                  (throw 'done nil)
-                   (setq xi (cadr ek)
-                         m 1)))
-             ((mexptp ek)
-              (cond
-                ((sine-p (second ek))
-                 (if xi
-                     (throw 'done nil))
-                 (setq xi (second (second ek))
-                       m (third ek)))
-                (t
-                 (if q
-                     (throw 'done nil))
-                 (setq q (second ek)
-                       n (third ek)))))
-             (t
-              (throw 'done nil))))))
-
-         (when (null q)
-            (setq q 1))
-         (when (null xi)
-            (setq m 0))     
-         (throw 'done (values (fapply 'mtimes cnst) xi m q n)))))
-
-(defun match-cosc (e x)
-  "Match `e` to `cnst * cos(xi)^m / q^n`, where `cnst` is free of `x`, 
-   both `xi` and `q` depend on `x`, and `m` and `n` are integers."
-  (let ((cnst nil) (xi nil) (m 0) (q nil) (n 0))
-    (catch 'done
-      (cond
-        ((mtimesp e)
-         (setq e (cdr e))
-         (dolist (ek e)
-           (cond
-             ((freeof x ek) (push ek cnst))
-             (($mapatom ek) (throw 'done nil))
-             ((cosine-p ek)
-              (if xi
-                  (throw 'done nil)
-                   (setq xi (cadr ek)
-                         m 1)))
-             ((mexptp ek)
-              (cond
-                ((cosine-p (second ek))
-                 (if xi
-                     (throw 'done nil))
-                 (setq xi (second (second ek))
-                       m (third ek)))
-                (t
-                 (if q
-                     (throw 'done nil))
-                 (setq q (second ek)
-                       n (third ek)))))
-             (t
-              (throw 'done nil))))))
-         (when (null q)
-            (setq q 1))
-         (when (null xi)
-            (setq m 0))
-
-         (throw 'done (values (fapply 'mtimes cnst) xi m q n)))))
-
 (defun myfreeof (e x)
   (freeof x e))
 
@@ -255,6 +170,7 @@ fresnel_si and fresnel_ci functions.
 
 (defun nonnegative-integer-p (n)
   (and (integerp n) (>= n 0)))
+
 (defun $match_fresnel (e x)
   (multiple-value-bind (cnst a b c m n) (match-fresnel e '%sin x)
     (ftake 'mlist cnst a b c m n)))
@@ -371,96 +287,36 @@ fresnel_si and fresnel_ci functions.
         ;; Otherwise, return nil
         (t nil)))))
 
-#| 
-
-
-(defun $m2_sinc (e x)
-  (let ((match (m2-sinc e x)))
-    (mtell "cnst = ~M ; xi = ~M ; m = ~M ; q = ~M ; n = ~M ~%"
-      (cdr (assoc 'cnst match))
-       (cdr (assoc 'xi match))
-        (cdr (assoc 'm match))
-         (cdr (assoc 'q match))
-          (cdr (assoc 'n match)))
-    '$done))
-    
 ;; To match both sin(1+x)/(1+x) and sin(1-x)/(1-x), both patterns are needed; similarly
 ;; for m2-cosc.  Possibly this function should be rewritten to make it less dependent 
 ;;on term ordering, but until it is shown to be broken, let's let it be.
-(defun match-sinc (e x)
-  "Match `e` to `cnst * sin(xi)^m / q^n`, where `cnst` is free of `x`, 
+
+(defun match-sinc-cosc (e fn x)
+  "Match `e` to `cnst * sin(xi)^m / q^n`, where `cnst` is free of `x`,
    both `xi` and `q` depend on `x`, and `m` and `n` are integers."
-   (let ((match
-  (or (m2 e `((mtimes)
-              ((coefftt) (cnst myfreeof ,x))
-              ((mexpt) (q notfreeof ,x) (n integerp))
-              ((mexpt) ((%sin) (xi notfreeof ,x)) (m integerp))))
-      (m2 e `((mtimes)
-              ((coefftt) (cnst myfreeof ,x))
-              ((mexpt) ((%sin) (xi notfreeof ,x)) (m integerp))
-              ((mexpt) (q notfreeof ,x) (n integerp)))))))
-  (if match
-        (values (cdr (assoc 'cnst match))
-                (cdr (assoc 'xi match))
-                (cdr (assoc 'm match))
-                (cdr (assoc 'q match))
-                (cdr (assoc 'n match)))
-      nil)))
+  (let ((cnst) (xi) (m) (q) (n)
+        (match
+         (or (m2 e `((mtimes)
+                     ((coefftt) (cnst myfreeof ,x))
+                     ((mexpt) (q notfreeof ,x) (n integerp))
+                     ((mexpt) ((,fn) (xi notfreeof ,x)) (m integerp))))
+             (m2 e `((mtimes)
+                     ((coefftt) (cnst myfreeof ,x))
+                     ((mexpt) ((,fn) (xi notfreeof ,x)) (m integerp))
+                     ((mexpt) (q notfreeof ,x) (n integerp)))))))
 
-(defun m2-cosc (e x)
-  "Match `e` to `cnst * cos(xi)^m / q^n`, where `cnst` is free of `x`, 
-   both `xi` and `q` depend on `x`, and `m` and `n` are integers."
-  (or (m2 e `((mtimes)
-              ((coefftt) (cnst myfreeof ,x))
-              ((mexpt) (q notfreeof ,x) (n integerp))
-              ((mexpt) ((%cos) (xi notfreeof ,x)) (m integerp))))
-      (m2 e `((mtimes)
-              ((coefftt) (cnst myfreeof ,x))
-              ((mexpt) ((%cos) (xi notfreeof ,x)) (m integerp))
-              ((mexpt) (q notfreeof ,x) (n integerp))))))
+    (when match
+      (setq cnst (cdr (assoc 'cnst match))
+            xi   (cdr (assoc 'xi match))
+            m    (cdr (assoc 'm match))
+            q    (cdr (assoc 'q match))
+            n    (cdr (assoc 'n match))))
 
-;; I should consider returning to an m2-based method for matching. The code is much
-;; shorter.
+    (when (null q)
+      (setq q 1))
 
-(defun myfreeof (e x)
-  (freeof x e))
+    (when (null xi)
+      (setq xi (div '$%pi 2))
+      (setq m 0))
 
-(defun notfreeof (e x)
-  (not (freeof x e)))
-
-(defun $m2_sinc (e x)
-  (let ((match (m2-sinc e x)))
-    (mtell "cnst = ~M ; xi = ~M ; m = ~M ; q = ~M ; n = ~M ~%"
-      (cdr (assoc 'cnst match))
-       (cdr (assoc 'xi match))
-        (cdr (assoc 'm match))
-         (cdr (assoc 'q match))
-          (cdr (assoc 'n match)))
-    '$done))
-;; To match both sin(1+x)/(1+x) and sin(1-x)/(1-x), both patterns are needed; similarly
-;; for m2-cosc.  Possibly this function should be rewritten to make it less dependent 
-;;on term ordering, but until it is shown to be broken, let's let it be.
-(defun m2-sinc (e x)
-  "Match `e` to `cnst * sin(xi)^m / q^n`, where `cnst` is free of `x`, 
-   both `xi` and `q` depend on `x`, and `m` and `n` are integers."
-  (or (m2 e `((mtimes)
-              ((coefftt) (cnst myfreeof ,x))
-              ((mexpt) (q notfreeof ,x) (n integerp))
-              ((mexpt) ((%sin) (xi notfreeof ,x)) (m integerp))))
-      (m2 e `((mtimes)
-              ((coefftt) (cnst myfreeof ,x))
-              ((mexpt) ((%sin) (xi notfreeof ,x)) (m integerp))
-              ((mexpt) (q notfreeof ,x) (n integerp))))))
-
-(defun m2-cosc (e x)
-  "Match `e` to `cnst * cos(xi)^m / q^n`, where `cnst` is free of `x`, 
-   both `xi` and `q` depend on `x`, and `m` and `n` are integers."
-  (or (m2 e `((mtimes)
-              ((coefftt) (cnst myfreeof ,x))
-              ((mexpt) (q notfreeof ,x) (n integerp))
-              ((mexpt) ((%cos) (xi notfreeof ,x)) (m integerp))))
-      (m2 e `((mtimes)
-              ((coefftt) (cnst myfreeof ,x))
-              ((mexpt) ((%cos) (xi notfreeof ,x)) (m integerp))
-              ((mexpt) (q notfreeof ,x) (n integerp))))))
- |#
+    (values cnst xi m q n)))
