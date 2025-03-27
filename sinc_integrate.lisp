@@ -34,7 +34,9 @@ fresnel_si and fresnel_ci functions.
   (setq e ($factor e))
   (or 
     (sinc-integrate e x)
-    (cosc-integrate e x)))
+    (cosc-integrate e x)
+    (fresnel-sin-integrate e x)
+    (fresnel-cos-integrate e x)))
 
 (defun sinc-integrate (e x)
 "When `e` has the form `cnst sin(xi)^m / q^n`, where `m` & `n` are positive integers and `xi` 
@@ -184,11 +186,12 @@ fresnel_si and fresnel_ci functions.
                       ((mexpt) ,x (m nonnegative-integer-p))
                       ((mexpt) ((,fn) 
                                  ((mplus)
-                                   ((coeffpt) (c freevar2 ,x) ((mexpt) (x varp2 ,x) 2))
+                                   ((coeffpt) (c freevar2 ,x) ((mexpt) (x varp2 ,x) 2)) ; check c =/= 0 later
                                    ((coeffpt) (b freevar2 ,x) (z varp2 ,x))
                                    ((coeffpt) (a freevar2 ,x))))
                                 (n nonnegative-integer-p))))))
-    (if match
+
+    (if (and match (eq t (mnqp 0 (cdr (assoc 'c match)))))
         (values (cdr (assoc 'cnst match))
                 (cdr (assoc 'a match))
                 (cdr (assoc 'b match))
