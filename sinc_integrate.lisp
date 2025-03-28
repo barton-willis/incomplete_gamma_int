@@ -373,7 +373,7 @@ return (values cnst a mc ms); otherwise return nil."
       (t nil))))
 
 (defun powers-sin-cos-integrate (e x)
-  ;; Cconvert trigfunctions to sine/cosine form. But to convert something like 
+  ;; We begin by converting trigfunctions to sine/cosine form. But to convert something like 
   ;; csc(x)^m * cot(x)^n to a product of powers of sine and cosine, either m and
   ;; n need to be declared to be integers, or we need to apply radcan to the result
   ;; of trigsimp.
