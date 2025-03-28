@@ -373,8 +373,12 @@ return (values cnst a mc ms); otherwise return nil."
       (t nil))))
 
 (defun powers-sin-cos-integrate (e x)
-  (multiple-value-bind (cnst a mc ms) (match-cos^m-sin^n e x)
- 
+  ;; Cconvert trigfunctions to sine/cosine form. But to convert something like 
+  ;; csc(x)^m * cot(x)^n to a product of powers of sine and cosine, either m and
+  ;; n need to be declared to be integers, or we need to apply radcan to the result
+  ;; of trigsimp.
+  (setq e (mfuncall '$trigsimp e))
+  (multiple-value-bind (cnst a mc ms) (match-cos^m-sin^n e x) 
     (cond
        ((null cnst) nil)
 
