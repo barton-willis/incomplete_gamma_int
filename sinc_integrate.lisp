@@ -33,15 +33,14 @@ this code.
         ((coeffpt) (a freevar2 ,var2)))))
 
 ;; Only for testing--not intended to be a user level function
-(defmfun $integrate_by_matching (e x)
+(defmfun integrate-by-matching (e x)
    (setq e ($factor e))
-  (or 
-    (sinc-integrate e x)
-    (cosc-integrate e x)
-    (fresnel-sin-integrate e x)
-    (fresnel-cos-integrate e x)
-    (powers-sin-cos-integrate e x)))
-
+  nil
+;(sinc-integrate e x)
+;(cosc-integrate e x)))
+    ;(fresnel-sin-integrate e x)
+    ;(fresnel-cos-integrate e x)
+)
 (defun sinc-cosc-integrate (e x)
  " When `e` has the form `cnst cos\sin(xi)^m / q^n`, where `m` & `n` are positive integers and `xi` 
    and `q` are affine functions of `x`, return an antiderivative of `e` with respect to `x`; otherwise, 
